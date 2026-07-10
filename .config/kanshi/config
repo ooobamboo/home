@@ -1,0 +1,8 @@
+profile nomad {
+    output eDP-1 mode 2560x1600@165Hz scale 1.4
+}
+
+profile home {
+    output DP-2 mode 2560x1440@180Hz position 0,0
+    output eDP-1 disable
+}
