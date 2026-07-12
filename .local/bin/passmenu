@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -x
+
+shopt -s nullglob globstar
+
+if [[ $1 == "--type" ]]; then
+	typeit=1
+	shift
+fi
+
+prefix=${PASSWORD_STORE_DIR-~/.password-store}
+password_files=( "$prefix"/**/*.gpg )
+password_files=( "${password_files[@]#"$prefix"/}" )
+password_files=( "${password_files[@]%.gpg}" )
+
+choice=$(printf '%s\n' "${password_files[@]}" | wmenu -l 6 -p "$(basename $0)" -i "$@")
+[[ -n $choice ]] || exit
+
+decrypted_pass=$(gpg --decrypt "$prefix/$choice.gpg" 2>/dev/null | head -n 1)
+[[ -n $decrypted_pass ]] || exit
+
+full_content=$(gpg --decrypt "$prefix/$choice.gpg" 2>/dev/null)
+
+[[ -n $full_content ]] || exit 1
+
+if echo "$full_content" | grep -q "otpauth://"; then
+    decrypted_pass=$(echo "$full_content" | pass otp "$choice")
+else
+    decrypted_pass=$(echo "$full_content" | head -n 1)
+fi
+
+[[ -n $decrypted_pass ]] || exit
+
+
+if [[ $typeit -eq 0 ]]; then
+	printf %s "$decrypted_pass" | wl-copy
+else
+	printf %s "$decrypted_pass" | wtype -
+fi
+

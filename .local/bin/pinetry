@@ -1,0 +1,76 @@
+#!/bin/sh
+# Other pinentry-menu or generic menu-pinentry
+# implementations are either too complex, do too little,
+# or display in a displeasing manner.
+
+echo 'OK Pleased to meet you'
+
+# native shell implementation to decode percent-encoded
+# input as $_d, avoiding perl or unportable syntax
+# such as printf '%b' or replacement substitution.
+decode() {
+	_d=$1 p='[0-9a-fa-f][0-9a-fa-f]'
+	while :; do case "$_d" in
+	(*%0A*) _d="${_d%%\%0A*} ${_d#*\%0A}" ;;
+	(*%$p*)
+		_a=${_d#*\%$p}; _o="\x${_d#*\%}";
+		_d="${_d%%\%*}"$(env printf "${_o%%$_a}")"$_a"
+	;;
+	(*) break ;;
+	esac; done
+}
+
+err() {
+	# Specification does not define what the point
+	# of this is nor how to display an error.
+	echo "ERR $$ ${*:-IPC error}"
+}
+
+alias wmenu='wmenu -p "${DESC:+$DESC | }${PROMPT:-pinentry}: "'
+
+while read -r input; do
+	cmd="${input%%\ *}"
+	case $cmd in
+	BYE)
+		echo OK
+	  exit
+	  ;;
+	SETTITLE|OPTION|SETKEYINFO)
+		# Unimplemented
+		echo OK
+		;;
+	SETOK|SETCANCEL|SETDESC|SETERROR|SETPROMPT)
+		value="${input#*$cmd}"; value="${value#?}"
+		case "$value" in
+		(*%[0-9a-fA-F][0-9a-fA-F]*) decode "$value" ;;
+		(*) _d="$value"
+		esac
+		eval "${cmd#SET}='$_d'"
+		echo OK
+		;;
+	CONFIRM)
+		case "$(printf '%s\n' "${OK-Ok}" "${CANCEL-Cancel}" |
+			wmenu \
+				-p "${DESC:-}"
+		)" in
+		("$OK") echo OK ;;
+		("$CANCEL") err ASSUAN_Not_Confirmed ;;
+		*) err "Unknown choice" ;;
+		esac
+		;;
+	GETPIN)
+		# Displaying an error should be seperate from
+		# the message, such as perhaps as a 'selection',
+		# however it will dissapear upon user input,
+		# so it is contatenated with the message instead.
+	  pin="$(
+	  	:|wmenu -P \
+	  		-p "${DESC:+$DESC }${ERROR:+[Error: $ERROR] }${PROMPT:-pinentry}: "
+	  )" || { err "Cancelled"; continue; }
+	  printf 'D '
+	  echo "$pin"
+	  echo OK
+	  ;;
+	*) err;
+	esac
+done
