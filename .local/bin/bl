@@ -1,0 +1,47 @@
+#!/bin/sh
+
+mode=in
+[ "$1" = -e ] && { mode=ex; shift; }
+
+val="$1"
+case $val in [0-9]*) ;; *) echo "usage: bl [-e] n[%][-/+]" >&2; exit 1 ;; esac
+
+if [ "$mode" = in ]; then
+    dev=/sys/class/backlight/nvidia_0
+    [ -e "$dev" ] || { echo "no backlight class" >&2; exit 1; }
+
+    read -r cur < "$dev/brightness"
+    read -r max < "$dev/max_brightness"
+
+    case $val in
+        *+) num=${val%+}; num=${num%%%}; cur=$(( cur + num * max / 100 )) ;;
+        *-) num=${val%-}; num=${num%%%}; cur=$(( cur - num * max / 100 )) ;;
+        *)  num=${val%%%}; cur=$(( num * max / 100 )) ;;
+    esac
+
+    [ "$cur" -gt "$max" ] && cur=$max
+    [ "$cur" -lt 0 ] && cur=0
+
+    echo "$cur" > "$dev/brightness" || { echo "write failed" >&2; exit 1; }
+    res=$cur
+else
+    cache=$XDG_STATE_HOME/brightness-ddc
+    read -r cur < "$cache" 2>/dev/null || cur=0
+
+    case $val in
+        *+) tgt=$(( cur + ${val%%[!0-9]*} )) ;;
+        *-) tgt=$(( cur - ${val%%[!0-9]*} )) ;;
+        *)  tgt=${val%%[!0-9]*} ;;
+    esac
+
+    [ "$tgt" -lt 0 ] && tgt=0
+    [ "$tgt" -gt 100 ] && tgt=100
+
+    chk=$(( 0x6E ^ 0x51 ^ 0x84 ^ 0x03 ^ 0x10 ^ 0 ^ tgt ))
+    i2ctransfer -y 2 w7@0x37 0x51 0x84 0x03 0x10 0 "$tgt" "$chk" || { echo "DDC write failed" >&2; exit 1; }
+
+    echo "$tgt" > "$cache"
+    res=$tgt
+fi
+
+fyi -r 998 -H int:value:"$res" Brightness

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+selected_sink="$(pactl list short sinks | awk '{print $2}' | wmenu -p '[change sink] ' -l 3)"
+
+[ -z "$selected_sink" ] && exit 0
+
+pactl set-default-sink "$selected_sink"

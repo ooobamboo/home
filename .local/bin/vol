@@ -1,0 +1,29 @@
+#!/bin/sh
+
+dev=@DEFAULT_SINK@
+! [ "$1" = '-m' ] || { dev=@DEFAULT_SOURCE@; shift; }
+
+case "$1" in
+	mute) wpctl set-mute "$dev" toggle ;;
+	[0-9]*)
+		wpctl set-volume "$dev" "$1"
+	;;
+	*) printf "usage: vol [-m] n[%%][-/+]|mute\n" >&2; exit 1; ;;
+esac
+
+vol="$(wpctl get-volume "$dev")"
+vol="${vol##*: }"
+[ "$vol" = "${vol##*\ }" ] && {
+	vol="${vol%%.*}${vol##*.}"
+	vol="${vol#${vol%%[!0]*}}"
+	vol="${vol:-0}"
+} || {
+	vol="0"
+}
+
+case "$dev" in
+	@DEFAULT_SINK@) dev=Sink ;;
+	@DEFAULT_SOURCE@) dev=Source ;;
+esac
+
+fyi -r 999 -H int:value:"$vol" "Volume"
