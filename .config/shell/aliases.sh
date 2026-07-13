@@ -11,3 +11,5 @@ alias ff="fastfetch"
 alias wshowkeys="wshowkeys -a bottom -F 'monospace 20'"
 
 alias dotfiles='/usr/bin/git --git-dir="$HOME/doc/.dotfiles/" --work-tree="$HOME"'
+
+alias adb='HOME="${XDG_STATE_HOME:-$HOME/.local/state}/adb" adb'
