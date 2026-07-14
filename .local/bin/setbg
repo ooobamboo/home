@@ -1,0 +1,15 @@
+#!/bin/sh
+
+[ -z "$1" ] && exit 1
+
+target="$1"
+
+if [ -d "$target" ]; then
+	target=$(find "$target" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) | awk 'BEGIN{srand()} {print rand(), $0}' | sort -n | cut -d ' ' -f2- | head -n1)
+fi
+
+[ -f "$target" ] || exit 1
+
+ln -sf "$(realpath "$target")" "$XDG_DATA_HOME/wallpaper"
+killall wawa 2>/dev/null
+nohup wawa fill "$XDG_DATA_HOME/wallpaper" >/dev/null 2>&1 &
