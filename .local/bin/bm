@@ -1,0 +1,23 @@
+#!/bin/sh
+
+file="${XDG_DATA_HOME}/address/address"
+mkdir -p "${file%/*}" && touch "$file"
+
+case "$1" in
+    -e) footclient vi "$file" ;;
+    -a)
+        url=$(wl-paste | grep -E 'https?://[^ ]+' | sed 's/.*\(https\?:\/\/[^ ]\+\).*/\1/' | head -1)
+        [ -z "$url" ] && { fyi -u critical "$(basename $0)" "no url in clipboard"; exit 1; }
+
+        grep -Fqe "$url" "$file" && fyi 3000 "$(basename $0)" "exists: $url" \
+            || { printf '%s\n' "$url" >> "$file"; fyi "$(basename $0)" "added: $url"; }
+        ;;
+    -c)
+        url=$(grep -E -v '^#|^$' "$file" | wmenu -p "Copy Address" -l 10)
+        [ -n "$url" ] && { echo -n "$url" | wl-copy; fyi "$(basename $0)" "copied: $url"; }
+        ;;
+    *)
+        url=$(grep -E -v '^#|^$' "$file" | wmenu -p "$(basename $0)" -l 10)
+        [ -n "$url" ] && $BROWSER "$url"
+        ;;
+esac
