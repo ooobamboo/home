@@ -1,0 +1,8 @@
+#!/bin/sh
+
+RECORD_HOME="${XDG_VIDEOS_DIR}/rec"
+[ -d "${RECORD_HOME}" ] || mkdir -p ${RECORD_HOME}
+
+pkill -SIGINT -f 'gpu-screen-recorder' && fyi -t 1500 -u low 'GPU Screen Recorder' 'Stopped' && exit 0
+
+/usr/bin/gpu-screen-recorder -w portal -o "${RECORD_HOME}/rec-$(date +%Y-%m-%d_%H_%M_%S).mp4"

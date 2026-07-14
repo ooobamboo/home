@@ -1,0 +1,44 @@
+#!/bin/sh -x
+
+SCREENSHOT_HOME="${XDG_PICTURES_DIR}/shot"
+[ -d "${SCREENSHOT_HOME}" ] || mkdir -p "${SCREENSHOT_HOME}"
+
+filename="${SCREENSHOT_HOME}/shot-$(date +%Y-%m-%d_%H_%M_%S).png"
+
+notify() {
+    [ -z "$region" ] && exit 0
+    fyi -u low "$(basename "$0")" "$region"
+}
+
+shotPortal() {
+    gpu-screen-recorder -w portal -o "$filename" && wl-copy < "$filename" && region="Portal Selection" && notify
+}
+
+shotAll() {
+    region="all outputs"
+    gpu-screen-recorder -w screen -o "$filename" && notify
+}
+
+shotGeo() {
+    region=$(slurp)
+    [ -z "$region" ] && exit 1
+    
+    gsr_region=$(echo "$region" | awk -F'[, ]' '{print $3"+"$1"+"$2}')
+    
+    gpu-screen-recorder -w region -region "$gsr_region" -o "$filename" && wl-copy < "$filename" && notify
+}
+
+shotShow() {
+    local tmpfile=$(mktemp /tmp/mag.XXXXXX.png)
+    gpu-screen-recorder -w focused -o "$tmpfile" && imv "$tmpfile" -f
+    rm "$tmpfile"
+}
+
+[ -z "$1" ] && shotPortal
+
+case "$1" in
+    --portal) shotPortal ;;
+    --all) shotAll ;;
+    --geo) shotGeo ;;
+    --show) shotShow ;;
+esac
