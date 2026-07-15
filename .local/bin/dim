@@ -1,0 +1,7 @@
+#!/bin/sh
+
+wldim \
+    dim 600000 2000 0.5 \
+    dim-exec 960000 3000 1.0 "waylock -ignore-empty-password -init-color 0x000000 -input-color 0x005577 -fail-color 0xcc3333 -fork-on-lock; wlr-randr --output DP-2 --off" \
+    undim 1000 \
+    resume-exec "wlr-randr --output DP-2 --on"
