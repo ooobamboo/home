@@ -1,0 +1,119 @@
+#!/usr/bin/env -S /home/seriola/.local/src/ocr/.venv/bin/python
+"""ocro — Screenshot OCR via grim+slurp + PaddleOCR PP-OCRv6"""
+
+import argparse
+import logging
+import os
+import subprocess
+import sys
+import threading
+import time
+import warnings
+
+os.environ.setdefault("PADDLE_PDX_CACHE_HOME",
+                      os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "paddlex"))
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+os.environ["PADDLE_PDX_EAGER_INIT"] = "False"
+os.environ["PADDLE_PDX_USE_PIR_TRT"] = "0"
+warnings.filterwarnings("ignore")
+for name in ["paddlex", "paddleocr", "paddle", "ppocr"]:
+    logging.getLogger(name).setLevel(logging.ERROR)
+
+MODEL_TIERS = {
+    "tiny":  ("PP-OCRv6_tiny_det",  "PP-OCRv6_tiny_rec"),
+    "small": ("PP-OCRv6_small_det", "PP-OCRv6_small_rec"),
+}
+
+MIN_DIM = 200
+SCALE_THRESH = 1.5
+
+
+def capture_region() -> bytes:
+    try:
+        geo = subprocess.run(["slurp"], capture_output=True, text=True, check=True).stdout.strip()
+        if not geo:
+            sys.exit(0)
+        return subprocess.run(["grim", "-g", geo, "-"], capture_output=True, check=True).stdout
+    except subprocess.CalledProcessError:
+        sys.exit(0)
+
+
+def maybe_upscale(img):
+    h, w = img.shape[:2]
+    if min(h, w) >= MIN_DIM:
+        return img
+    scale = min(MIN_DIM / min(h, w), SCALE_THRESH)
+    import cv2
+    return cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="ocro — screenshot OCR")
+    ap.add_argument("--model", choices=list(MODEL_TIERS), default="tiny")
+    ap.add_argument("--lang", choices=["ch", "en"], default="ch")
+    ap.add_argument("--upscale", type=float, default=0,
+                    help="force upscale factor (0 = auto)")
+    args = ap.parse_args()
+
+    det_name, rec_name = MODEL_TIERS[args.model]
+    ocr_ready = threading.Event()
+    ocr_ref = []
+
+    def _init_ocr():
+        from paddleocr import PaddleOCR
+        ocr_ref.append(PaddleOCR(
+            lang=args.lang,
+            text_detection_model_name=det_name,
+            text_recognition_model_name=rec_name,
+            use_doc_orientation_classify=False,
+            use_doc_unwarping=False,
+            use_textline_orientation=False,
+            device="gpu",
+            text_recognition_batch_size=32,
+            text_det_box_thresh=0.4,
+            text_det_unclip_ratio=2.0,
+        ))
+        ocr_ready.set()
+
+    t = threading.Thread(target=_init_ocr, daemon=True)
+    t.start()
+
+    raw = capture_region()
+
+    import cv2
+    import numpy as np
+    img = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)
+
+    ocr_ready.wait()
+    ocr = ocr_ref[0]
+
+    t_start = time.time()
+
+    if args.upscale > 0:
+        s = args.upscale
+        img = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_CUBIC)
+    else:
+        img = maybe_upscale(img)
+
+    result = ocr.predict(img)
+
+    texts = []
+    for page in result:
+        texts.extend(page.get("rec_texts", []))
+
+    text = "\n".join(texts).strip()
+    if not text:
+        print("(no text)")
+        return
+
+    t_elapsed = time.time() - t_start
+    print(f"# ocr: {t_elapsed:.2f}s | {args.model} | {args.lang}", file=sys.stderr)
+    print(text)
+    try:
+        subprocess.run(["wl-copy", "-n"], input=text, text=True, check=False)
+    except FileNotFoundError:
+        pass
+
+
+if __name__ == "__main__":
+    main()
