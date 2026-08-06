@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 CACHE_DIR="${XDG_DATA_HOME}/chars"
 EMOJI_CACHE="$CACHE_DIR/emoji"
