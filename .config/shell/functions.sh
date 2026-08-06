@@ -79,3 +79,11 @@ doc2pdf() {
         [ -f "$f" ] && flatpak run org.libreoffice.LibreOffice --headless --convert-to pdf --outdir "${f:h}" "$f"
     done
 }
+
+source /usr/share/examples/lf/lfcd.sh
+
+PS0+='\e]133;C\e\\'
+command_done() {
+    printf '\e]133;D\e\\'
+}
+PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND; }command_done
