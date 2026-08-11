@@ -14,14 +14,6 @@ weather() {
     curl -s 'wttr.in/{Guangzhou,Taichung}?format=3'
 }
 
-open-secret() {
-    gocryptfs /home/seriola/wsp/cryptdata/secret_cipher /home/seriola/wsp/cryptdata/secret
-}
-
-close-secret() {
-    fusermount -u /home//seriola/wsp/cryptdata/secret
-}
-
 checksum() {
     cd "${1:-.}"
     find . -type f -exec sha256sum {} + | sort -k 2
