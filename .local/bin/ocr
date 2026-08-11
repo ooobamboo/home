@@ -1,97 +1,61 @@
 #!/usr/bin/env -S /home/seriola/.local/src/ocr/.venv/bin/python
-"""ocro — region OCR: slurp + gpu-screen-recorder + PaddleOCR"""
+"""ocro: slurp + gpu-screen-recorder + PaddleOCR region OCR"""
 
-import logging
-import os
-import subprocess
-import tempfile
-import threading
-import warnings
+import logging, os, subprocess, tempfile, threading, warnings
+import cv2, numpy as np
 
-import cv2
-import numpy as np
-
-os.environ.setdefault(
-    "PADDLE_PDX_CACHE_HOME",
-    os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "paddlex"),
-)
-os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-os.environ["PADDLE_PDX_EAGER_INIT"] = "False"
-os.environ["PADDLE_PDX_USE_PIR_TRT"] = "0"
+os.environ.setdefault("PADDLE_PDX_CACHE_HOME",
+    os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "paddlex"))
+os.environ.update(PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK="True",
+                  PADDLE_PDX_EAGER_INIT="False", PADDLE_PDX_USE_PIR_TRT="0")
 warnings.filterwarnings("ignore")
-for name in ("paddlex", "paddleocr", "paddle", "ppocr"):
-    logging.getLogger(name).setLevel(logging.ERROR)
-
-def _new_ocr():
-    from paddleocr import PaddleOCR
-
-    return PaddleOCR(
-        lang="ch",
-        text_detection_model_name="PP-OCRv6_tiny_det",
-        text_recognition_model_name="PP-OCRv6_tiny_rec",
-        use_doc_orientation_classify=False,
-        use_doc_unwarping=False,
-        use_textline_orientation=False,
-        device="gpu",
-        text_recognition_batch_size=32,
-        text_det_box_thresh=0.4,
-        text_det_unclip_ratio=2.0,
-    )
+logging.disable(logging.CRITICAL)
 
 
-def capture_region():
+def main():
+    box, ready = [], threading.Event()
+
+    def load():
+        from paddleocr import PaddleOCR
+        box.append(PaddleOCR(lang="ch",
+            text_detection_model_name="PP-OCRv6_tiny_det",
+            text_recognition_model_name="PP-OCRv6_tiny_rec",
+            use_doc_orientation_classify=False, use_doc_unwarping=False,
+            use_textline_orientation=False, device="gpu",
+            text_recognition_batch_size=32, text_det_box_thresh=0.4,
+            text_det_unclip_ratio=2.0))
+        ready.set()
+
+    threading.Thread(target=load, daemon=True).start()
+
     geo = subprocess.run(["slurp", "-f", "%wx%h+%x+%y"],
                          capture_output=True, text=True).stdout.strip()
     if not geo:
-        return None
+        return
+
     fd, path = tempfile.mkstemp(suffix=".png")
     os.close(fd)
     try:
         subprocess.run(["gpu-screen-recorder", "-w", "region", "-region", geo, "-o", path],
                        check=True)
-        with open(path, "rb") as f:
-            return f.read()
+        img = cv2.imread(path)
     except subprocess.CalledProcessError:
-        return None
+        return
     finally:
         os.unlink(path)
 
-
-def main():
-    ocr_ready = threading.Event()
-    ocr_box = []
-
-    def _load():
-        ocr_box.append(_new_ocr())
-        ocr_ready.set()
-
-    threading.Thread(target=_load, daemon=True).start()
-
-    raw = capture_region()
-    if raw is None:
-        return
-
-    img = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)
     h, w = img.shape[:2]
     if min(h, w) < 200:
-        scale = min(200 / min(h, w), 1.5)
-        img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+        s = min(200 / min(h, w), 1.5)
+        img = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_CUBIC)
 
-    ocr_ready.wait()
-    texts = []
-    for page in ocr_box[0].predict(img):
-        texts.extend(page.get("rec_texts", []))
-
-    text = "\n".join(texts).strip()
+    ready.wait()
+    text = "\n".join(t for p in box[0].predict(img) for t in p.get("rec_texts", [])).strip()
     if text:
-        try:
-            subprocess.run(["wl-copy", "-n"], input=text, text=True)
-        except FileNotFoundError:
-            pass
+        subprocess.run(["wl-copy", "-n"], input=text, text=True)
         print(text)
     else:
         print("(no text)")
-
     subprocess.run(["fyi", "OCR complete"])
 
 
