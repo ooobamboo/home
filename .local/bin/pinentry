@@ -1,20 +1,29 @@
-#!/bin/sh
-# Other pinentry-menu or generic menu-pinentry
+#!/bin/sh -x
+# Copyright (c) 2025-2026 sewn <sewn@disroot.org>
+# 
+# Other pinentry-fuzzel or generic menu-pinentry
 # implementations are either too complex, do too little,
 # or display in a displeasing manner.
+#
+# Modified 2026 by aloires <aloires@tutamail.com>:
+#   fuzzel replaced with wmenu; description and error are
+#   folded into the prompt as wmenu has no message display.
 
 echo 'OK Pleased to meet you'
 
-# native shell implementation to decode percent-encoded
+nl='
+'
+
+# Native shell implementation to decode percent-encoded
 # input as $_d, avoiding perl or unportable syntax
 # such as printf '%b' or replacement substitution.
 decode() {
-	_d=$1 p='[0-9a-fa-f][0-9a-fa-f]'
+	_d=$1 p='[0-9a-fA-F][0-9a-fA-F]'
 	while :; do case "$_d" in
-	(*%0A*) _d="${_d%%\%0A*} ${_d#*\%0A}" ;;
+	(*%0A*) _d="${_d%%\%0A*}$nl${_d#*\%0A}" ;;
 	(*%$p*)
 		_a=${_d#*\%$p}; _o="\x${_d#*\%}";
-		_d="${_d%%\%*}"$(env printf "${_o%%$_a}")"$_a"
+		_d="${_d%%\%*}"$(printf "${_o%%$_a}")"$_a"
 	;;
 	(*) break ;;
 	esac; done
@@ -26,10 +35,17 @@ err() {
 	echo "ERR $$ ${*:-IPC error}"
 }
 
-alias wmenu='wmenu -p "${DESC:+$DESC | }${PROMPT:-pinentry}: "'
+menu() {
+	# wmenu has no message display, so the description
+	# and error are folded into the prompt.
+	wmenu -i \
+		${2:+$2} \
+		${1:+-p "$1"}
+}
 
 while read -r input; do
 	cmd="${input%%\ *}"
+	msg="${DESC:+$DESC$nl}${ERROR:+Error: $ERROR$nl}"
 	case $cmd in
 	BYE)
 		echo OK
@@ -50,22 +66,15 @@ while read -r input; do
 		;;
 	CONFIRM)
 		case "$(printf '%s\n' "${OK-Ok}" "${CANCEL-Cancel}" |
-			wmenu \
-				-p "${DESC:-}"
-		)" in
+			menu "$msg")" in
 		("$OK") echo OK ;;
 		("$CANCEL") err ASSUAN_Not_Confirmed ;;
-		*) err "Unknown choice" ;;
+		(*) err "Unknown choice" ;;
 		esac
 		;;
 	GETPIN)
-		# Displaying an error should be seperate from
-		# the message, such as perhaps as a 'selection',
-		# however it will dissapear upon user input,
-		# so it is contatenated with the message instead.
 	  pin="$(
-	  	:|wmenu -P \
-	  		-p "${DESC:+$DESC }${ERROR:+[Error: $ERROR] }${PROMPT:-pinentry}: "
+	  	:|menu "${msg}${PROMPT:-pinentry}: " -P
 	  )" || { err "Cancelled"; continue; }
 	  printf 'D '
 	  echo "$pin"
