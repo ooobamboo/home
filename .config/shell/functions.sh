@@ -72,7 +72,9 @@ doc2pdf() {
     done
 }
 
-source /usr/share/examples/lf/lfcd.sh
+lfcd () {
+    cd "$(command lf -print-last-dir "$@")"
+}
 
 PS0+='\e]133;C\e\\'
 command_done() {
