@@ -11,3 +11,5 @@ set -o vi
 export HISTSIZE=10000
 
 export GPG_TTY=$(tty)
+
+eval "$(mise activate bash)"
