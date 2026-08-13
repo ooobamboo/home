@@ -30,7 +30,6 @@ export SDL_IM_MODULE=fcitx
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export GIT_CONFIG_GLOBAL="$XDG_CONFIG_HOME/git/config"
-export ZDOTDIR="$XDG_CONFIG_HOME"/zsh
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
@@ -41,6 +40,7 @@ export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
 export GOMODCACHE="$XDG_CACHE_HOME/go/mod"
 export NUGET_PACKAGES="$XDG_CACHE_HOME/nuget/package"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
+export UV_CACHE_DIR="$HOME/.local/src/uv/cache"
 
 # state
 export PYTHON_HISTORY="$XDG_STATE_HOME/python_history"
@@ -68,6 +68,7 @@ export MANPATH="$XDG_DATA_HOME/man:/usr/share/man:"
 export RUSTUP_DIST_SERVER="https://rsproxy.cn"
 export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
 export GOPROXY="https://mirrors.aliyun.com/goproxy" 
+export UV_INDEX_URL="https://mirrors.nju.edu.cn/pypi/web/simple"
 
 export GRIM_DEFAULT_DIR=$HOME/tmp
 export LIBVIRT_DEFAULT_URI="qemu:///system"
