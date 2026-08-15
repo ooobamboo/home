@@ -35,6 +35,5 @@ fi
 if [[ $typeit -eq 0 ]]; then
 	printf %s "$decrypted_pass" | wl-copy
 else
-	wlrctl keyboard type $decrypted_pass
+	wlrctl keyboard type "$decrypted_pass"
 fi
-
