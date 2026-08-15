@@ -1,6 +1,8 @@
 alias ls="ls --color=auto"
 
-alias lf="lfcd"
+alias lf="lfcd; printf '\033[0m'"
+
+alias wget --hsts-file="$XDG_STATE_HOME/wget-hsts"
 
 alias yarn="yarn --use-yarnrc $XDG_CONFIG_HOME/yarn/config"
 
