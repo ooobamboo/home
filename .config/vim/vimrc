@@ -1,0 +1,47 @@
+runtime xdg.vim
+
+let s:data  = empty($XDG_DATA_HOME)  ? expand('~/.local/share') : expand('$XDG_DATA_HOME')
+let s:state = empty($XDG_STATE_HOME) ? expand('~/.local/state') : expand('$XDG_STATE_HOME')
+
+func s:mkvimdir(dir)
+  if !isdirectory(a:dir)
+    call mkdir(a:dir, 'p')
+  endif
+  return a:dir
+endfunc
+
+" Persistent data (XDG_DATA_HOME)
+let &undodir = s:mkvimdir(s:data .. '/vim/undo')
+let &viewdir = s:mkvimdir(s:data .. '/vim/view')
+let g:netrw_home = s:mkvimdir(s:data .. '/vim')
+call s:mkvimdir(s:data .. '/vim/spell')
+
+" Transient state (XDG_STATE_HOME)
+let &directory  = s:mkvimdir(s:state .. '/vim/swap')   .. '//'
+let &backupdir  = s:mkvimdir(s:state .. '/vim/backup') .. '//'
+
+delfunction s:mkvimdir
+unlet s:data s:state
+
+set undofile
+
+filetype plugin indent on
+syntax on
+
+set relativenumber
+set nowrap
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+set expandtab
+set tabstop=4
+set shiftwidth=4
+
+set smartindent
+
+set cc=80
+
+cmap w!! w !sudo tee > /dev/null %
