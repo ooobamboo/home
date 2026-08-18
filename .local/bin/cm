@@ -1,3 +1,4 @@
 #!/bin/sh
 
-mpv --profile=low-latency --untimed /dev/video0
+ffplay -f v4l2 -fflags nobuffer -flags low_delay -framedrop \
+    -probesize 32 -analyzeduration 0 /dev/video0

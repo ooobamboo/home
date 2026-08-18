@@ -46,20 +46,20 @@ export UV_CACHE_DIR="$HOME/.local/src/uv/cache"
 export PYTHON_HISTORY="$XDG_STATE_HOME/python_history"
 export LESSHISTFILE="$XDG_STATE_HOME/less/history"
 export MYSQL_HISTFILE="$XDG_STATE_HOME/mariadb/history"
-export SQLITE_HISTORY="$XDG_STATE_HOME"/sqlite_history
+export SQLITE_HISTORY="$XDG_STATE_HOME/sqlite_history"
 export HISTFILE="$XDG_STATE_HOME/history"
-export GDBHISTFILE="$XDG_STATE_HOME"/gdb/history
+export GDBHISTFILE="$XDG_STATE_HOME/gdb/history"
 export CALCHISTFILE="$XDG_STATE_HOME/calc_history"
 
 # data
 export W3M_DIR="$XDG_DATA_HOME/w3m"
 export GOPATH="$XDG_DATA_HOME/go"
-export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
+export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export NIMBLE_DIR="$XDG_DATA_HOME/nimble"
 export R_LIBS_USER="$XDG_DATA_HOME/R"
-export PASSWORD_STORE_DIR="$XDG_DATA_HOME"/password
+export PASSWORD_STORE_DIR="$XDG_DATA_HOME/password"
 export ZVM_PATH="$XDG_DATA_HOME/zvm"
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"
 export MANPATH="$XDG_DATA_HOME/man:/usr/share/man:"
@@ -68,7 +68,7 @@ export MANPATH="$XDG_DATA_HOME/man:/usr/share/man:"
 export RUSTUP_DIST_SERVER="https://rsproxy.cn"
 export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
 export GOPROXY="https://mirrors.aliyun.com/goproxy" 
-export UV_INDEX_URL="https://mirrors.nju.edu.cn/pypi/web/simple"
+export UV_INDEX_URL="https://mirrors.sustech.edu.cn/pypi/web/simple"
 
 export GRIM_DEFAULT_DIR=$HOME/tmp
 export LIBVIRT_DEFAULT_URI="qemu:///system"
@@ -81,8 +81,8 @@ export SDL_VIDEODRIVER="wayland,x11"
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # android
-export ANDROID_HOME=$XDG_DATA_HOME/android
-export ANDROID_SDK_ROOT=$XDG_DATA_HOME/android
+export ANDROID_HOME="$XDG_DATA_HOME/android"
+export ANDROID_SDK_ROOT="$XDG_DATA_HOME/android"
 
 PATH="$HOME/.local/bin:\
 $XDG_DATA_HOME/flatpak/exports/bin:\
@@ -93,6 +93,10 @@ $XDG_DATA_HOME/npm/bin:\
 $ANDROID_HOME/platform-tools:\
 $PATH"
 export PATH
+
+if [ -n "$PS1" ] && [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
 
 export XDG_SESSION_TYPE=wayland
 if [[ -z $WAYLAND_DISPLAY && $(tty) = "/dev/tty1" ]]; then

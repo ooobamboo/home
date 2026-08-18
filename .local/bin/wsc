@@ -1,6 +1,6 @@
 #!/bin/sh
 
-selected_source="$(pactl list short sources | awk '{print $2}' | wmenu -p '[change sources] ' -l 3)"
+selected_source="$(pactl list short sources | awk '{print $2}' | mew -l 6 -p '[change sources] ')"
 
 [ -z "$selected_source" ] && exit 0
 

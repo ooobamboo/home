@@ -19,57 +19,64 @@ checksum() {
     find . -type f -exec sha256sum {} + | sort -k 2
 }
 
-viewcolor() {
-    local hex="${1#\#}"
-    local r=$(printf "%d" "0x${hex:0:2}")
-    local g=$(printf "%d" "0x${hex:2:2}")
-    local b=$(printf "%d" "0x${hex:4:2}")
-    
-    echo -e "\e[48;2;${r};${g};${b}m      \e[0m  #${hex}"
+fkill() {
+    local pid
+    pid=$( ([ "$UID" -eq 0 ] && ps -ef || ps -f -u "$UID") | sed 1d | fzy | awk '{print $2}' )
+    [ -n "$pid" ] && kill -"${1:-9}" "$pid"
 }
 
-mic() {
-    cava -p <(echo -e "[input]\nmethod = pulse\nsource = echo_cancel")
+fh() {
+    local cmd
+    cmd=$( (fc -l 1 || history) | sed -E 's/ *[0-9]*\*? *//' | tac | fzy )
+    [ -n "$cmd" ] && eval "$cmd"
 }
 
-mu() {
-  [ -z "$@" ] && \
-      ps axh -o rss,pid,cmd:20 --sort=-rss | awk '{printf "%s %s %.2f MB\n", $2, $3, $1/1024}' | head -20 | column -t || \
-      ps -o rss,pid,cmd -p $(pidof -x "$@") | awk 'NR==1 {print; next} {printf "%s %s %.2f MB\n", $2, $3, $1/1024}' | column -t
+fcd() {
+    local file dir
+    file=$(bfs -j8 -S dfs -type f \
+        -exclude -name .git \
+        .| fzy -l 30 -q "$1")
+    [ -n "$file" ] && dir=$(dirname "$file") && cd "$dir"
 }
 
-netcheck() {
-  local ip=1.2.3.4
-  if expr "$ip" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$' >/dev/null; then
-    echo "success"
-  else
-    echo "fail"
-  fi
+fif() {
+    [ -z "$1" ] && echo ">" && return 1
+    local res file line
+
+    res=$(rg --line-number --no-heading --color=never --smart-case \
+        -g '!.git' "$1" 2>/dev/null | fzy -l 25)
+
+    [ -z "$res" ] && return
+    file=$(echo "$res" | cut -d: -f1)
+    line=$(echo "$res" | cut -d: -f2)
+
+    ${EDITOR} "+$line" "$file"
 }
 
-ipl() {
-    local ip="${1:-$(curl -sfm5 ifconfig.me)}"
-    local prefix="IP"
-    [[ "$ip" =~ [a-zA-Z] ]] && {
-        [[ "$ip" =~ ^https?:// ]] && prefix=$(echo "$ip" | sed 's|^[^/]*//||;s|/.*||') || prefix="$ip"
-        ip=$(dig +short +tls @1.1.1.1 "$prefix" 2>/dev/null | tail -n1)
-    }
-    [[ -z "$ip" ]] && echo "Fetch/Resolve failed" && return 1
-
-    local mmdb_file="${XDG_DATA_HOME}/geoip/GeoLite2-Country.mmdb"
-    local country=$(mmdblookup --file "$mmdb_file" --ip "$ip" country names en 2>/dev/null | grep '"' | cut -d'"' -f2)
-    local code=$(mmdblookup --file "$mmdb_file" --ip "$ip" country iso_code 2>/dev/null | grep '"' | cut -d'"' -f2)
-    [ -z "$country" ] && country="Unknown"
-
-    local flag=$(python3 -c "c='$code'; print(''.join(chr(0x1F1E6+ord(x)-65) for x in c) if len(c)==2 else '🌐')")
-    
-    printf "%s: [%s %s] (%s)\n" "$prefix" "$flag" "$country" "$ip"
+xmd() {
+    python3 -c '
+        import glob, plistlib, sys
+        db = glob.glob("/var/db/xbps/pkgdb-*.plist")[0]
+        with open(db, "rb") as f:
+            data = plistlib.load(f)
+        res = [
+            (v.get("install-date", ""), k) 
+            for k, v in data.items() 
+            if not k.startswith("_") and isinstance(v, dict) and not v.get("automatic-install")
+        ]
+        for date, pkg in sorted(res, reverse="-r" in sys.argv):
+            print(f"{date}  {pkg}")
+    ' "$@"
 }
 
-doc2pdf() {
-    for f in "$@"; do
-        [ -f "$f" ] && flatpak run org.libreoffice.LibreOffice --headless --convert-to pdf --outdir "${f:h}" "$f"
-    done
+fetch() {
+	printf '%s@%s\n%-10sVoid Linux\n%-10s%s\n%-10s%s\n%-10s%s\n%-10s%s\n' \
+		"$USER" "$(hostname)" \
+		"OS:" \
+		"KERNEL:" "$(uname -sr)" \
+		"UPTIME:" "$(uptime -p | sed 's/up //')" \
+		"PACKAGES:" "$(xbps-query -l | wc -l)" \
+		"SHELL:" "${SHELL##*/}"
 }
 
 lfcd () {

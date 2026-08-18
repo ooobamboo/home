@@ -1,6 +1,6 @@
 #!/bin/sh
 
-selected_sink="$(pactl list short sinks | awk '{print $2}' | wmenu -p '[change sink] ' -l 3)"
+selected_sink="$(pactl list short sinks | awk '{print $2}' | mew -l 6 -p '[change sink] ')"
 
 [ -z "$selected_sink" ] && exit 0
 

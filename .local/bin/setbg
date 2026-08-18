@@ -4,9 +4,12 @@
 
 target="$1"
 
-if [ -d "$target" ]; then
-	target=$(find "$target" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) | awk 'BEGIN{srand()} {print rand(), $0}' | sort -n | cut -d ' ' -f2- | head -n1)
-fi
+[ -d "$target" ] && \
+  target=$(find "$target" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) \
+    | awk 'BEGIN{srand()} {print rand(), $0}' \
+    | sort -n \
+    | cut -d ' ' -f2- \
+    | head -n1)
 
 [ -f "$target" ] || exit 1
 
