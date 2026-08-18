@@ -33,7 +33,7 @@ fh() {
 
 fcd() {
     local file dir
-    file=$(bfs -j8 -S dfs -type f \
+    file=$(bfs -type f \
         -exclude -name .git \
         .| fzy -l 30 -q "$1")
     [ -n "$file" ] && dir=$(dirname "$file") && cd "$dir"

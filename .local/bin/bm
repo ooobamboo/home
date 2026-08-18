@@ -17,7 +17,7 @@ case "$1" in
         [ -n "$url" ] && { echo -n "$url" | wl-copy; fyi "$(basename $0)" "copied: $url"; }
         ;;
     *)
-        url=$(grep -E -v '^#|^$' "$file" | mew -l 10 -p "$(basename $0)")
+        url=$(grep -E -v '^#|^$' "$file" | mew -i -l 10 -p "$(basename $0)")
         [ -n "$url" ] && $BROWSER "$url"
         ;;
 esac
