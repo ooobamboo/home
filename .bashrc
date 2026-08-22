@@ -1,12 +1,9 @@
-. /usr/share/bash-completion/bash_completion
+. /etc/bash/bashrc
+. /usr/share/git/git-prompt.sh
+. $XDG_CONFIG_HOME/shell/aliases.sh
+. $XDG_CONFIG_HOME/shell/functions.sh
 
-PS1='$PWD $ '
-PROMPT_COMMAND='printf "\033]7;file://%s%s\033\\" "$HOSTNAME" "$PWD"'
-
-source $XDG_CONFIG_HOME/shell/aliases.sh
-source $XDG_CONFIG_HOME/shell/functions.sh
-
-set -o vi
+PS1='$PWD $(__git_ps1 "(%s) ")\$ '
 
 export HISTSIZE=10000
 

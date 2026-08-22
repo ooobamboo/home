@@ -1,0 +1,78 @@
+let s:config = empty($XDG_CONFIG_HOME) ? expand("~/.config") : expand("$XDG_CONFIG_HOME")
+let s:data   = empty($XDG_DATA_HOME)   ? expand("~/.local/share") : expand("$XDG_DATA_HOME")
+let s:state  = empty($XDG_STATE_HOME)  ? expand("~/.local/state") : expand("$XDG_STATE_HOME")
+
+if isdirectory(s:config .. '/evi')
+  func s:mkevidir(dir)
+    if !isdirectory(a:dir)
+      call mkdir(a:dir, 'p', 0700)
+    endif
+    return a:dir
+  endfunc
+
+  " Use Data for packages, prevent duplicates
+  if index(split(&packpath, ','), s:data .. '/evi') == -1
+    exe $"set packpath^={s:data}/evi"
+    exe $"set packpath+={s:data}/evi/after"
+  endif
+
+  " Persistent Data:
+  let &undodir = s:mkevidir(s:data .. '/evi/undo')
+  let &viewdir = s:mkevidir(s:data .. '/evi/view')
+  let g:netrw_home = s:mkevidir(s:data .. '/evi')
+  call s:mkevidir(s:data .. '/evi/spell')
+
+  " Transient State:
+  let &viminfofile = s:mkevidir(s:state .. '/evi') .. '/eviinfo'
+  let &directory = s:mkevidir(s:state .. '/evi/swap')   .. '//'
+  let &backupdir = s:mkevidir(s:state .. '/evi/backup') .. '//'
+
+  delfunction s:mkevidir
+endif
+
+unlet s:config s:data s:state
+
+xnoremap "+y y:call system("wl-copy", @")<cr>
+nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
+nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p
+xnoremap "+p :<C-u>let @z=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>gv"zp
+xnoremap "*p :<C-u>let @z=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>gv"zp
+nnoremap "+d d:call system("wl-copy", @")<cr>
+xnoremap "+d d:call system("wl-copy", @")<cr>
+
+filetype plugin indent on
+syntax on
+
+set undofile
+set relativenumber
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+set expandtab
+set tabstop=4
+set shiftwidth=4
+
+set smartindent
+
+set cc=80
+
+set backspace=indent,eol,start
+
+cmap w!! w !sudo tee > /dev/null %
+
+function! FzyCommand(choice_command, evi_command)
+  try
+    let output = system(a:choice_command . " | fzy ")
+  catch /Evi:Interrupt/
+    " Swallow errors from ^C, allow redraw! below
+  endtry
+  redraw!
+  if v:shell_error == 0 && !empty(output)
+    exec a:evi_command . ' ' . output
+  endif
+endfunction
+
+nnoremap <leader>vsp :call FzyCommand("find . -type f", ":vsp")<cr>

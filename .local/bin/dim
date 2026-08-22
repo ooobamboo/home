@@ -1,7 +1,0 @@
-#!/bin/sh
-
-wldim \
-    dim 600000 2000 0.5 \
-    dim-exec 960000 2000 0.5 "wlock; wlr-randr --output DP-2 --off" \
-    undim 1000 \
-    resume-exec "wlr-randr --output DP-2 --on"

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+API_KEY="$(pass show deepl)"
+
+curl -s -X POST "https://api-free.deepl.com/v2/translate" \
+     -H "Authorization: DeepL-Auth-Key $API_KEY" \
+     -d "target_lang=$1" \
+     --data-urlencode "text@-" | jq -r '.translations[0].text'

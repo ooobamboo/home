@@ -1,21 +1,19 @@
-# .profile
-
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export XDG_DOWNLOAD_DIR="$HOME/dls"
-export XDG_DOCUMENTS_DIR="$HOME/doc"
-export XDG_MUSIC_DIR="$HOME/mus"
-export XDG_PICTURES_DIR="$HOME/pic"
-export XDG_VIDEOS_DIR="$HOME/vid"
+export XDG_DOWNLOAD_DIR="$HOME/Downloads"
+export XDG_DOCUMENTS_DIR="$HOME/Documents"
+export XDG_MUSIC_DIR="$HOME/Music"
+export XDG_PICTURES_DIR="$HOME/Pictures"
+export XDG_VIDEOS_DIR="$HOME/Videos"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-export EDITOR="/usr/bin/vim"
+export EDITOR="/usr/bin/evi"
 export PAGER="/usr/bin/less"
-export BROWSER="$XDG_DATA_HOME/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
+export BROWSER="$XDG_DATA_HOME/flatpak/exports/bin/org.mozilla.firefox"
 
 # theme
 export QT_QPA_PLATFORMTHEME=qt6ct
@@ -34,6 +32,7 @@ export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
 export NPM_CONFIG_PREFIX="$XDG_CONFIG_HOME/npm"
+export INPUTRC="$XDG_CONFIG_HOME/readline/inputrc"
 
 # cache
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
@@ -70,7 +69,6 @@ export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
 export GOPROXY="https://mirrors.aliyun.com/goproxy" 
 export UV_INDEX_URL="https://mirrors.sustech.edu.cn/pypi/web/simple"
 
-export GRIM_DEFAULT_DIR=$HOME/tmp
 export LIBVIRT_DEFAULT_URI="qemu:///system"
 
 export NO_AT_BRIDGE=1
@@ -81,6 +79,7 @@ export SDL_VIDEODRIVER="wayland,x11"
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # android
+export ANDROID_USER_HOME="$XDG_DATA_HOME/android"
 export ANDROID_HOME="$XDG_DATA_HOME/android"
 export ANDROID_SDK_ROOT="$XDG_DATA_HOME/android"
 
@@ -94,11 +93,8 @@ $ANDROID_HOME/platform-tools:\
 $PATH"
 export PATH
 
-if [ -n "$PS1" ] && [ -f "$HOME/.bashrc" ]; then
-    source "$HOME/.bashrc"
-fi
+[ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
 
-export XDG_SESSION_TYPE=wayland
-if [[ -z $WAYLAND_DISPLAY && $(tty) = "/dev/tty1" ]]; then
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	exec dbus-run-session -- sh -c 'slstatus -s | dwl -s $HOME/.local/src/mywm/archieve/dwl/autostart.sh'
 fi

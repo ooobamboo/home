@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cliphist list |
+    head -n 100 |
     sed 's/\t/ /' |
     mew -l 6 -p "$(basename "$0")" |
     sed 's/ /\t/' |

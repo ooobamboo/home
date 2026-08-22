@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 SCREENSHOT_HOME="${XDG_PICTURES_DIR}/shot"
 [ -d "${SCREENSHOT_HOME}" ] || mkdir -p "${SCREENSHOT_HOME}"
