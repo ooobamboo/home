@@ -3,7 +3,7 @@
 . $XDG_CONFIG_HOME/shell/aliases.sh
 . $XDG_CONFIG_HOME/shell/functions.sh
 
-PS1='$PWD $(__git_ps1 "(%s) ")\$ '
+PS1='\h \w $(c=$?; ((c)) && echo "$c ")\$ '
 
 export HISTSIZE=10000
 

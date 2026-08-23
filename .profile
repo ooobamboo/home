@@ -13,7 +13,7 @@ export XDG_STATE_HOME="$HOME/.local/state"
 
 export EDITOR="/usr/bin/evi"
 export PAGER="/usr/bin/less"
-export BROWSER="$XDG_DATA_HOME/flatpak/exports/bin/org.mozilla.firefox"
+export BROWSER="/home/seriola/.local/share/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
 
 # theme
 export QT_QPA_PLATFORMTHEME=qt6ct
