@@ -11,7 +11,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-export EDITOR="/usr/bin/evi"
+export EDITOR="/usr/bin/vim"
 export PAGER="/usr/bin/less"
 export BROWSER="/home/seriola/.local/share/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
 
