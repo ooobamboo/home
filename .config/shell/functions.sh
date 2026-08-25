@@ -18,8 +18,10 @@ rgb_to_hex() {
 }
 
 fkill() {
-    local pid
-    pid=$( ([ "$UID" -eq 0 ] && ps -ef || ps -f -u "$UID") | sed 1d | fzy | awk '{print $2}')
+    local pid args=("-u" "$UID")
+    [ "$UID" -eq 0 ] && args=("-e")
+    pid=$(ps "${args[@]}" -o pid,rss,%mem,cmd --sort=-rss |
+        awk 'NR>1 {$2=sprintf("%.1fM", $2/1024); print}' | fzy -l 30 | awk '{print $1}')
     [ -n "$pid" ] && kill -"${1:-9}" "$pid"
 }
 

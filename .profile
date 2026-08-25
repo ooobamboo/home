@@ -40,6 +40,7 @@ export GOMODCACHE="$XDG_CACHE_HOME/go/mod"
 export NUGET_PACKAGES="$XDG_CACHE_HOME/nuget/package"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
 export UV_CACHE_DIR="$HOME/.local/src/uv/cache"
+export TRITON_CACHE_DIR="$XDG_CACHE_HOME/triton"
 
 # state
 export PYTHON_HISTORY="$XDG_STATE_HOME/python_history"
@@ -96,5 +97,5 @@ export PATH
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-	exec dbus-run-session -- sh -c 'slstatus -s | dwl -s $HOME/.local/src/mywm/archieve/dwl/autostart.sh'
+	exec dbus-run-session -- sh -c 'sway --unsupported-gpu'
 fi

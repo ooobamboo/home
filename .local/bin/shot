@@ -30,7 +30,7 @@ shotGeo() {
 
 shotShow() {
     local tmpfile=$(mktemp /tmp/mag.XXXXXX.png)
-    gpu-screen-recorder -w screen -o "$tmpfile" && imv "$tmpfile" -f
+    gpu-screen-recorder -w screen -o "$tmpfile" && ffplay "$tmpfile"
     rm "$tmpfile"
 }
 
