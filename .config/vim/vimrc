@@ -45,6 +45,7 @@ syntax on
 
 set undofile
 set relativenumber
+set ruler 
 
 set incsearch
 set hlsearch
