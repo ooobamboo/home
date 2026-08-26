@@ -33,12 +33,9 @@ endif
 unlet s:config s:data s:state
 
 xnoremap "+y y:call system("wl-copy", @")<cr>
-nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
-nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p
-xnoremap "+p :<C-u>let @z=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>gv"zp
-xnoremap "*p :<C-u>let @z=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>gv"zp
-nnoremap "+d d:call system("wl-copy", @")<cr>
 xnoremap "+d d:call system("wl-copy", @")<cr>
+nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), "\r", '', 'g')<cr>p
+nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), "\r", '', 'g')<cr>p
 
 filetype plugin indent on
 syntax on
@@ -46,20 +43,15 @@ syntax on
 set undofile
 set relativenumber
 set ruler 
-
 set incsearch
 set hlsearch
 set ignorecase
 set smartcase
-
 set expandtab
 set tabstop=4
 set shiftwidth=4
-
 set smartindent
-
 set cc=80
-
 set backspace=indent,eol,start
 
 cmap w!! w !sudo tee > /dev/null %
