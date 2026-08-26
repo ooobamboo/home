@@ -1,0 +1,157 @@
+exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP=sway SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
+exec pipewire
+exec pipewire-pulse
+exec wireplumber
+exec foot -s
+exec wlsunset -l 39.9 -L 116.4
+exec fcitx5 -d
+exec wl-paste --watch cliphist store
+exec swayidle -w \
+          timeout 300 'swaylock -f -c 000000' \
+          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+          before-sleep 'swaylock -f -c 000000'
+exec wayland-pipewire-idle-inhibit
+
+output DP-2 {
+    mode 2560x1440@179.999Hz
+    bg ~/Pictures/wal/gruvbox-wallpapers/wallpapers/photography/bush.png fill
+    position 0,0
+}
+
+output eDP-1 {
+    disable
+}
+
+seat * {
+    hide_cursor 3000
+}
+
+default_border pixel
+
+bindsym Mod4+Shift+Return exec footclient
+
+# Kill focused window
+bindsym Mod4+Shift+c kill
+
+# Start your launcher
+bindsym Mod4+p exec mew-run -i
+
+floating_modifier Mod4 normal
+
+# Reload the configuration file
+bindsym Mod4+Shift+r reload
+
+# Exit sway (logs you out of your Wayland session)
+bindsym Mod4+Shift+q exec 'swaymsg exit'
+
+# Switch to workspace
+bindsym Mod4+1 workspace number 1
+bindsym Mod4+2 workspace number 2
+bindsym Mod4+3 workspace number 3
+bindsym Mod4+4 workspace number 4
+bindsym Mod4+5 workspace number 5
+bindsym Mod4+6 workspace number 6
+bindsym Mod4+7 workspace number 7
+bindsym Mod4+8 workspace number 8
+bindsym Mod4+9 workspace number 9
+bindsym Mod4+0 workspace number 10
+# Move focused container to workspace
+bindsym Mod4+Shift+1 move container to workspace number 1
+bindsym Mod4+Shift+2 move container to workspace number 2
+bindsym Mod4+Shift+3 move container to workspace number 3
+bindsym Mod4+Shift+4 move container to workspace number 4
+bindsym Mod4+Shift+5 move container to workspace number 5
+bindsym Mod4+Shift+6 move container to workspace number 6
+bindsym Mod4+Shift+7 move container to workspace number 7
+bindsym Mod4+Shift+8 move container to workspace number 8
+bindsym Mod4+Shift+9 move container to workspace number 9
+bindsym Mod4+Shift+0 move container to workspace number 10
+bindsym Mod4+f fullscreen
+
+bindsym Mod4+Shift+space floating toggle
+bindsym Mod4+space focus mode_toggle
+
+bindsym Mod4+h focus left
+bindsym Mod4+j focus down
+bindsym Mod4+k focus up
+bindsym Mod4+l focus right
+
+bindsym Mod4+Shift+h move left
+bindsym Mod4+Shift+j move down
+bindsym Mod4+Shift+k move up
+bindsym Mod4+Shift+l move right
+
+bindsym Mod4+b exec "swaymsg bar mode toggle"
+
+bindsym Mod4+x exec $BROWSER
+
+bindsym Mod4+minus exec vol 2%-
+bindsym Mod4+equal exec vol 2%+
+bindsym Mod4+backspace exec vol mute
+bindsym Mod4+Shift+minus exec vol -m 2%-
+bindsym Mod4+Shift+equal exec vol -m 2%+
+bindsym Mod4+Shift+backspace exec vol -m mute
+
+bindsym Mod4+bracketleft exec bl 2%-
+bindsym Mod4+bracketright exec bl 2%+
+bindsym Mod4+Shift+bracketleft exec bl -e 2%-
+bindsym Mod4+Shift+bracketright exec bl -e 2%+
+
+bindsym Mod4+Shift+Control+l exec swaylock -f -c 000000
+
+bindsym Mod4+Shift+n exec fnottctl dismiss
+
+bindsym Mod4+s exec shot
+bindsym Mod4+Shift+s exec shot --geo
+bindsym Mod4+Control+s exec shot --all
+bindsym Mod4+Shift+Control+s exec shot --show
+bindsym Mod4+Shift+Control+w exec rec
+
+bindsym Mod4+c exec clip
+bindsym Mod4+Control+c exec cliphist wipe
+
+bindsym Mod4+a exec bm
+bindsym Mod4+Shift+a exec bm -a
+
+bindsym Mod4+Shift+b exec bt
+bindsym Mod4+Control+b exec ef
+
+bindsym Mod4+Control+w exec passmenu --type
+
+bindsym Mod4+y resize shrink width 30px
+bindsym Mod4+o resize grow width 30px
+bindsym Mod4+u resize shrink height 30px
+bindsym Mod4+i resize grow height 30px
+
+bar {
+    position top
+    status_command slstatus -s
+    colors {
+        background         #222222
+        statusline         #bbbbbb
+        focused_workspace  #005577 #005577 #eeeeee
+        inactive_workspace #222222 #222222 #bbbbbb
+        urgent_workspace   #770000 #770000 #eeeeee
+    }
+
+    font pango:monospace 13
+    height 24
+    tray_output none
+}
+
+input * {
+    repeat_delay 300
+    repeat_rate 80
+}
+
+focus_follows_mouse no
+focus_wrapping no
+mouse_warping none
+
+gaps inner 8
+gaps outer 2
+
+bindsym Mod4+Escape mode Passthrough
+mode Passthrough {
+    bindsym Mod4+Escape mode "default"
+}
