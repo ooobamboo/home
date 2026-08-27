@@ -102,10 +102,10 @@ bindsym Mod4+Shift+Control+l exec wlock
 
 bindsym Mod4+Shift+n exec fnottctl dismiss
 
-bindsym Mod4+s exec shot
-bindsym Mod4+Shift+s exec shot --geo
-bindsym Mod4+Control+s exec shot --all
-bindsym Mod4+Shift+Control+s exec shot --show
+bindsym Mod4+g exec shot
+bindsym Mod4+Shift+g exec shot --geo
+bindsym Mod4+Control+g exec shot --all
+bindsym Mod4+Shift+Control+g exec shot --show
 bindsym Mod4+Shift+Control+w exec rec
 
 bindsym Mod4+c exec clip
