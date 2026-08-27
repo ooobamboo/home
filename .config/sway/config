@@ -7,9 +7,9 @@ exec wlsunset -l 39.9 -L 116.4
 exec fcitx5 -d
 exec wl-paste --watch cliphist store
 exec swayidle -w \
-          timeout 300 'swaylock -f -c 000000' \
+          timeout 300 'wlock' \
           timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-          before-sleep 'swaylock -f -c 000000'
+          before-sleep 'wlock'
 exec wayland-pipewire-idle-inhibit
 exec ~/.config/sway/autotiling-rs
 exec wawa fill ~/Pictures/wal/gruvbox-wallpapers/wallpapers/photography/bush.png
@@ -98,7 +98,7 @@ bindsym Mod4+bracketright exec bl 2%+
 bindsym Mod4+Shift+bracketleft exec bl -e 2%-
 bindsym Mod4+Shift+bracketright exec bl -e 2%+
 
-bindsym Mod4+Shift+Control+l exec swaylock -f -c 000000
+bindsym Mod4+Shift+Control+l exec wlock
 
 bindsym Mod4+Shift+n exec fnottctl dismiss
 
