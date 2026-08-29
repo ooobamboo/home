@@ -12,7 +12,7 @@ case "${EXT,,}" in
     bz2|deb|gz|jar|rpm|tar|tbz2|tgz|txz|xz|zip|zst)
         bsdtar --list --file "$1" && exit 0 ;;
     rar) unrar-free lt -p- -- "$1" && exit 0 ;;
-    pdf) mutool draw -F png -i -- "$1" 1 | img - "$2" "$3" && exit 0 ;;
+    pdf) pdftoppm -f 1 -l 1 -singlefile -jpeg "$1" | img - "$2" "$3" && exit 0 ;;
     xlsx) xlsx2csv -- "$1" && exit 0 ;;
     htm|html|xhtml) w3m -dump "$1" && exit 0 ;;
     json) jq -C . "$1" && exit 0 ;;
@@ -25,11 +25,11 @@ case "$MIME" in
     *wordprocessingml.document|*/epub+zip|*/x-fictionbook+xml)
         pandoc -s -t markdown -- "$1" && exit 0 ;;
     *ms-excel) xls2csv -- "$1" && exit 0 ;;
-    text/*|*/xml) bat --color=always --style=plain -- "$1" && exit 0 ;;
+    text/*|*/xml) cat -- "$1" && exit 0 ;;
     image/*) img "$1" "$2" "$3" && exit 0 ;;
     video/*) ffmpegthumbnailer -i "$1" -o - -c jpg -s 0 \
         | img - "$2" "$3" && exit 0 ;;
-    audio/*) ffprobe -hide_banner -hide_banner -loglevel error -show_entries \
+    audio/*) ffprobe -hide_banner -loglevel error -show_entries format_tags \
         "$1" 2>&1 && exit 0 ;;
     application/x-executable|application/x-pie-executable|application/x-sharedlib)
         readelf -WCa "$1" && exit 0 ;;

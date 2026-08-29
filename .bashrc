@@ -12,4 +12,5 @@ export GPG_TTY=$(tty)
 source /usr/share/bash-completion/completions/git
 __git_complete dotfiles __git_main
 
-eval "$(mise activate bash)"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
