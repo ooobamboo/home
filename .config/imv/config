@@ -1,0 +1,41 @@
+[options]
+suppress_default_binds = false
+
+[binds]
+# Define some key bindings
+<Escape> = quit
+
+# Image navigation
+<Shift+K> = prev
+<Shift+J> = next
+gg = goto 1
+<Shift+G> = goto -1
+
+# Panning
+j = pan 0 -50
+k = pan 0 50
+h = pan 50 0
+l = pan -50 0
+
+# Zooming
+i = zoom 1
+o = zoom -1
+
+# Rotate Clockwise by 90 degrees
+<Ctrl+r> = rotate by 90
+
+# Other commands
+f = fullscreen
+d = overlay
+s = scaling next
+<Shift+S> = upscaling next
+z = zoom actual
+r = reset
+
+# Gif playback
+<period> = next_frame
+<space> = toggle_playing
+
+# Slideshow control
+t = slideshow +1
+<Shift+T> = slideshow -1

@@ -16,13 +16,13 @@ export PAGER="/usr/bin/less"
 export BROWSER="/home/seriola/.local/share/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
 
 # theme
-export QT_QPA_PLATFORMTHEME=qt6ct
-export GTK_THEME=Adwaita:dark
+export QT_QPA_PLATFORMTHEME="qt6ct"
+export GTK_THEME="Adwaita:dark"
 
 # ime
 export QT_IM_MODULES="wayland;fcitx;ibus"
-export XMODIFIERS=@im=fcitx
-export SDL_IM_MODULE=fcitx
+export XMODIFIERS=@im="fcitx"
+export SDL_IM_MODULE="fcitx"
 
 # config
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
@@ -75,7 +75,7 @@ export LIBVIRT_DEFAULT_URI="qemu:///system"
 export NO_AT_BRIDGE=1
 
 # native wayland
-export SDL_VIDEO_DRIVER=wayland
+export SDL_VIDEO_DRIVER="wayland"
 export SDL_VIDEODRIVER="wayland,x11"
 export _JAVA_AWT_WM_NONREPARENTING=1
 

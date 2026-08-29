@@ -1,44 +1,50 @@
 #!/bin/sh
 
-SCREENSHOT_HOME="${XDG_PICTURES_DIR}/shot"
-[ -d "${SCREENSHOT_HOME}" ] || mkdir -p "${SCREENSHOT_HOME}"
+save_and_notify() {
+    screenshot_dir="$XDG_PICTURES_DIR/shot"
+    mkdir -p "$screenshot_dir"
+    screenshot_file="$screenshot_dir/shot-$(date +%Y-%m-%d_%H_%M_%S).png"
 
-filename="${SCREENSHOT_HOME}/shot-$(date +%Y-%m-%d_%H_%M_%S).png"
-
-notify() {
-    [ -z "$region" ] && exit 0
-    fyi -u low "$(basename "$0")" "$region"
+    tee "$screenshot_file" | wl-copy && fyi -u low "${0##*/}" "$1"
 }
 
-shotPortal() {
-    gpu-screen-recorder -w portal -o "$filename" && wl-copy < "$filename" && region="Portal Selection" && notify
+shotWindow() {
+    window_handle=$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).foreign_toplevel_identifier')
+    [ -n "$window_handle" ] && grim -T "$window_handle" - | save_and_notify "Focused Window"
 }
 
 shotAll() {
-    region="all outputs"
-    gpu-screen-recorder -w screen -o "$filename" && notify
+    grim - | save_and_notify "All Outputs"
 }
 
 shotGeo() {
-    region=$(slurp)
-    [ -z "$region" ] && exit 1
-    
-    gsr_region=$(echo "$region" | awk -F'[, ]' '{print $3"+"$1"+"$2}')
-    
-    gpu-screen-recorder -w region -region "$gsr_region" -o "$filename" && wl-copy < "$filename" && notify
+    region=$(slurp) && grim -g "$region" - | save_and_notify "$region"
 }
 
 shotShow() {
-    local tmpfile=$(mktemp /tmp/mag.XXXXXX.png)
-    gpu-screen-recorder -w screen -o "$tmpfile" && ffplay "$tmpfile"
-    rm "$tmpfile"
+    grim - | imv -f -
 }
 
-[ -z "$1" ] && shotPortal
+shotOCR() {
+    fifo_path=$(mktemp -u /tmp/ocr.XXXXXX.png)
+    mkfifo "$fifo_path"
 
-case "$1" in
-    --portal) shotPortal ;;
-    --all) shotAll ;;
-    --geo) shotGeo ;;
-    --show) shotShow ;;
+    cat "$fifo_path" | ocr | wl-copy -n &
+    pipeline_pid=$!
+
+    region=$(slurp) || { : > "$fifo_path"; rm -f "$fifo_path"; exit 1; }
+
+    grim -g "$region" "$fifo_path"
+    wait "$pipeline_pid"
+    rm -f "$fifo_path"
+
+    fyi -u low "${0##*/}" "OCR Complete"
+}
+
+case "${1:---window}" in
+    --window) shotWindow ;;
+    --all)    shotAll ;;
+    --geo)    shotGeo ;;
+    --show)   shotShow ;;
+    --ocr)    shotOCR ;;
 esac

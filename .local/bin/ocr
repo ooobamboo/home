@@ -1,7 +1,6 @@
-#!/usr/bin/env -S /home/seriola/.local/src/ocr/.venv/bin/python
-"""ocro: slurp + gpu-screen-recorder + PaddleOCR region OCR"""
+#!/home/seriola/.local/src/ocr/.venv/bin/python
 
-import logging, os, subprocess, tempfile, threading, warnings
+import logging, os, sys, warnings
 import cv2, numpy as np
 
 os.environ.setdefault("PADDLE_PDX_CACHE_HOME",
@@ -11,53 +10,36 @@ os.environ.update(PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK="True",
 warnings.filterwarnings("ignore")
 logging.disable(logging.CRITICAL)
 
+from paddleocr import PaddleOCR
+
+ocr = PaddleOCR(lang="ch",
+    text_detection_model_name="PP-OCRv6_tiny_det",
+    text_recognition_model_name="PP-OCRv6_tiny_rec",
+    use_doc_orientation_classify=False, use_doc_unwarping=False,
+    use_textline_orientation=False, device="gpu",
+    text_recognition_batch_size=32, text_det_box_thresh=0.4,
+    text_det_unclip_ratio=2.0)
 
 def main():
-    box, ready = [], threading.Event()
-
-    def load():
-        from paddleocr import PaddleOCR
-        box.append(PaddleOCR(lang="ch",
-            text_detection_model_name="PP-OCRv6_tiny_det",
-            text_recognition_model_name="PP-OCRv6_tiny_rec",
-            use_doc_orientation_classify=False, use_doc_unwarping=False,
-            use_textline_orientation=False, device="gpu",
-            text_recognition_batch_size=32, text_det_box_thresh=0.4,
-            text_det_unclip_ratio=2.0))
-        ready.set()
-
-    threading.Thread(target=load, daemon=True).start()
-
-    geo = subprocess.run(["slurp", "-f", "%wx%h+%x+%y"],
-                         capture_output=True, text=True).stdout.strip()
-    if not geo:
+    raw_data = sys.stdin.buffer.read()
+    if not raw_data:
         return
 
-    fd, path = tempfile.mkstemp(suffix=".png")
-    os.close(fd)
-    try:
-        subprocess.run(["gpu-screen-recorder", "-w", "region", "-region", geo, "-o", path],
-                       check=True)
-        img = cv2.imread(path)
-    except subprocess.CalledProcessError:
+    img_np = np.frombuffer(raw_data, np.uint8)
+    img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
+    if img is None:
         return
-    finally:
-        os.unlink(path)
 
     h, w = img.shape[:2]
     if min(h, w) < 200:
         s = min(200 / min(h, w), 1.5)
         img = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_CUBIC)
 
-    ready.wait()
-    text = "\n".join(t for p in box[0].predict(img) for t in p.get("rec_texts", [])).strip()
+    results = ocr.predict(img)
+    text = "\n".join(t for p in results for t in p.get("rec_texts", [])).strip()
+    
     if text:
-        subprocess.run(["wl-copy", "-n"], input=text, text=True)
-        print(text)
-    else:
-        print("(no text)")
-    subprocess.run(["fyi", "OCR complete"])
-
+        sys.stdout.write(text + "\n")
 
 if __name__ == "__main__":
     main()

@@ -7,17 +7,17 @@ case "$1" in
     -e) footclient $EDITOR "$file" ;;
     -a)
         url=$(wl-paste | grep -E 'https?://[^ ]+' | sed 's/.*\(https\?:\/\/[^ ]\+\).*/\1/' | head -1)
-        [ -z "$url" ] && { fyi -u critical "$(basename $0)" "no url in clipboard"; exit 1; }
+        [ -z "$url" ] && { fyi -u critical "${0##*/}" "no url in clipboard"; exit 1; }
 
-        grep -Fqe "$url" "$file" && fyi 3000 "$(basename $0)" "exists: $url" \
-            || { printf '%s\n' "$url" >> "$file"; fyi "$(basename $0)" "added: $url"; }
+        grep -Fqe "$url" "$file" && fyi 3000 "${0##*/}" "exists: $url" \
+            || { printf '%s\n' "$url" >> "$file"; fyi "${0##*/}" "added: $url"; }
         ;;
     -c)
-        url=$(grep -E -v '^#|^$' "$file" | mew -l 10 -p "Copy Address")
-        [ -n "$url" ] && { echo -n "$url" | wl-copy; fyi "$(basename $0)" "copied: $url"; }
+        url=$(grep -E -v '^#|^$' "$file" | mew -i -l 10 -p "Copy Address")
+        [ -n "$url" ] && { echo -n "$url" | wl-copy; fyi "${0##*/}" "copied: $url"; }
         ;;
     *)
-        url=$(grep -E -v '^#|^$' "$file" | mew -i -l 10 -p "$(basename $0)")
+        url=$(grep -E -v '^#|^$' "$file" | mew -i -l 10 -p "${0##*/}")
         [ -n "$url" ] && $BROWSER "$url"
         ;;
 esac

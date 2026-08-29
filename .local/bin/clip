@@ -3,7 +3,7 @@
 cliphist list |
     head -n 100 |
     sed 's/\t/ /' |
-    mew -l 6 -p "$(basename "$0")" |
+    mew -l 6 -p "${0##*/}" |
     sed 's/ /\t/' |
     cliphist decode |
     wl-copy
