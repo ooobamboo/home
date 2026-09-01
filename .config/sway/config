@@ -28,6 +28,7 @@ seat * {
 }
 
 default_border pixel
+default_floating_border pixel
 
 bindsym Mod4+Shift+Return exec footclient
 
@@ -128,11 +129,7 @@ bar {
     position top
     status_command slstatus -s
     colors {
-        background         #222222
-        statusline         #bbbbbb
-        focused_workspace  #005577 #005577 #eeeeee
-        inactive_workspace #222222 #222222 #bbbbbb
-        urgent_workspace   #770000 #770000 #eeeeee
+        background #222222
     }
 
     font pango:monospace 13

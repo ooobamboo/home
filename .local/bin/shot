@@ -9,8 +9,8 @@ save_and_notify() {
 }
 
 shotWindow() {
-    window_handle=$(swaymsg -t get_tree | jaq -j '.. | select(.type?) | select(.focused).foreign_toplevel_identifier')
-    [ -n "$window_handle" ] && grim -T "$window_handle" - | save_and_notify "Focused Window"
+    window_handle=$(swaymsg -t get_tree | jaq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')
+    [ -n "$window_handle" ] && grim -g "$window_handle" - | save_and_notify "Focused Window"
 }
 
 shotAll() {

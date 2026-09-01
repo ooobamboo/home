@@ -1,5 +1,5 @@
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
 
 export XDG_DOWNLOAD_DIR="$HOME/Downloads"
 export XDG_DOCUMENTS_DIR="$HOME/Documents"
@@ -16,7 +16,6 @@ export PAGER="/usr/bin/less"
 export BROWSER="/home/seriola/.local/share/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
 
 # theme
-export QT_QPA_PLATFORMTHEME="qt6ct"
 export GTK_THEME="Adwaita:dark"
 
 # ime
@@ -60,9 +59,7 @@ export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
 export GOPROXY="https://mirrors.aliyun.com/goproxy" 
 export PIP_INDEX_URL="https://mirrors.sustech.edu.cn/pypi/web/simple"
 
-# native wayland
-export SDL_VIDEO_DRIVER="wayland"
-export SDL_VIDEODRIVER="wayland,x11"
+# wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # android

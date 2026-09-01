@@ -37,7 +37,7 @@ else
     [ "$tgt" -lt 0 ] && tgt=0
     [ "$tgt" -gt 100 ] && tgt=100
 
-    chk=$(( 0x6E ^ 0x51 ^ 0x84 ^ 0x03 ^ 0x10 ^ 0 ^ tgt ))
+    chk=$(( 110 ^ 81 ^ 132 ^ 3 ^ 16 ^ 0 ^ tgt ))
     i2ctransfer -y 2 w7@0x37 0x51 0x84 0x03 0x10 0 "$tgt" "$chk" || { echo "DDC write failed" >&2; exit 1; }
 
     echo "$tgt" > "$cache"
