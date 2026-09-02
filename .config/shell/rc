@@ -1,4 +1,3 @@
-. /etc/bash/bashrc
 . /usr/share/git/git-prompt.sh
 . $XDG_CONFIG_HOME/shell/aliases.sh
 . $XDG_CONFIG_HOME/shell/functions.sh
