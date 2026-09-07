@@ -1,7 +1,5 @@
 exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP=sway SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
 exec pipewire
-exec pipewire-pulse
-exec wireplumber
 exec foot -s
 exec wlsunset -l 39.9 -L 116.4
 exec fcitx5 -d
@@ -16,6 +14,7 @@ exec wawa fill ~/Pictures/wal/gruvbox-wallpapers/wallpapers/photography/bush.png
 
 output DP-2 {
     mode 2560x1440@179.999Hz
+    adaptive_sync on
     position 0,0
 }
 
