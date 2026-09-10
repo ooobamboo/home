@@ -17,9 +17,7 @@ vol="${vol##*: }"
 	vol="${vol%%.*}${vol##*.}"
 	vol="${vol#${vol%%[!0]*}}"
 	vol="${vol:-0}"
-} || {
-	vol="0"
-}
+} || unset vol
 
 case "$dev" in
 	@DEFAULT_SINK@) dev=Sink ;;

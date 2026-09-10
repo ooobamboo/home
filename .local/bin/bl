@@ -1,14 +1,15 @@
 #!/bin/sh
 
 mode=in
-[ "$1" = -e ] && { mode=ex; shift; }
+! [ "$1" = -e ] || { mode=ex; shift; }
 
 val="$1"
-case $val in [0-9]*) ;; *) echo "usage: bl [-e] n[%][-/+]" >&2; exit 1 ;; esac
+case $val in [0-9]*) ;; *) printf 'usage: bl [-e] n[%][-/+]\n' >&2; exit 1 ;; esac
 
-if [ "$mode" = in ]; then
+case $mode in
+in)
     dev=/sys/class/backlight/nvidia_0
-    [ -e "$dev" ] || { echo "no backlight class" >&2; exit 1; }
+    [ -e "$dev" ] || { printf 'no backlight class\n' >&2; exit 1; }
 
     read -r cur < "$dev/brightness"
     read -r max < "$dev/max_brightness"
@@ -22,9 +23,10 @@ if [ "$mode" = in ]; then
     [ "$cur" -gt "$max" ] && cur=$max
     [ "$cur" -lt 0 ] && cur=0
 
-    echo "$cur" > "$dev/brightness" || { echo "write failed" >&2; exit 1; }
+    printf "$cur\n" > "$dev/brightness" || { printf 'write failed\n' >&2; exit 1; }
     res=$cur
-else
+    ;;
+ex)
     cache=$XDG_STATE_HOME/brightness-ddc
     read -r cur < "$cache" 2>/dev/null || cur=0
 
@@ -37,11 +39,12 @@ else
     [ "$tgt" -lt 0 ] && tgt=0
     [ "$tgt" -gt 100 ] && tgt=100
 
-    chk=$(( 110 ^ 81 ^ 132 ^ 3 ^ 16 ^ 0 ^ tgt ))
-    i2ctransfer -y 2 w7@0x37 0x51 0x84 0x03 0x10 0 "$tgt" "$chk" || { echo "DDC write failed" >&2; exit 1; }
+    chk=$(( 0x6E ^ 0x51 ^ 0x84 ^ 0x03 ^ 0x10 ^ 0 ^ tgt ))
+    i2ctransfer -y 2 w7@0x37 0x51 0x84 0x03 0x10 0 "$tgt" "$chk" || { printf 'DDC write failed\n' >&2; exit 1; }
 
-    echo "$tgt" > "$cache"
+    printf "$tgt\n" > "$cache"
     res=$tgt
-fi
+    ;;
+esac
 
 fyi -r 998 -H int:value:"$res" Brightness
