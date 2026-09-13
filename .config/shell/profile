@@ -52,7 +52,6 @@ export PASSWORD_STORE_DIR="$XDG_DATA_HOME/password"
 export ZVM_PATH="$XDG_DATA_HOME/zvm"
 export MANPATH="$XDG_DATA_HOME/man:/usr/share/man:"
 export NODE_REPL_HISTORY="$XDG_DATA_HOME/node_repl_history"
-export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
 
 # mirrors
 export RUSTUP_DIST_SERVER="https://rsproxy.cn"
@@ -79,5 +78,5 @@ $PATH"
 export PATH
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    exec dbus-run-session ssh-agent sway --unsupported-gpu
+    eval $(ssh-agent) && exec dbus-run-session sh -c 'slstatus -s | /home/seriola/.local/src/mywm/dwl/dwl -s /home/seriola/.local/src/mywm/dwl/autostart.sh'
 fi
