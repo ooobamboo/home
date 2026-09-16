@@ -1,6 +1,6 @@
 alias ls="ls --color=auto"
 
-alias lf="lfcd; printf '\033[0m'"
+alias lf="lfcd"
 
 alias wget='wget --hsts-file="$XDG_STATE_HOME/wget-hsts"'
 

@@ -12,7 +12,8 @@ case "${EXT,,}" in
     bz2|deb|gz|jar|rpm|tar|tbz2|tgz|txz|xz|zip|zst)
         bsdtar --list --file "$1" && exit 0 ;;
     rar) unrar-free lt -p- -- "$1" && exit 0 ;;
-    pdf) pdftoppm -f 1 -l 1 -singlefile -jpeg "$1" | img - "$2" "$3" && exit 0 ;;
+    pdf) gs -sDEVICE=png48 -DLastPage=1 -sOutputFile=- -dNOPAUSE -dBATCH \
+        -q "$1" | img - "$2" "$3" && exit 0 ;;
     xlsx) xlsx2csv -- "$1" && exit 0 ;;
     htm|html|xhtml) w3m -dump "$1" && exit 0 ;;
     json) jaq -C . "$1" && exit 0 ;;
@@ -24,8 +25,8 @@ MIME="$(file -bL --mime-type -- "$1")"
 case "$MIME" in
     text/*|*/xml) cat -- "$1" && exit 0 ;;
     image/*) img "$1" "$2" "$3" && exit 0 ;;
-    video/*) ffmpegthumbnailer -i "$1" -o - -c jpg -s 0 \
-        | img - "$2" "$3" && exit 0 ;;
+    video/*) ffmpeg -hide_banner -loglevel error -i "$1" -frames:v 1 \
+        -vf "scale=iw*0.5:ih*0.5" -f image2pipe -vcodec png -  | img - "$2" "$3" && exit 0 ;;
     audio/*) ffprobe -hide_banner -loglevel error -show_entries format_tags \
         "$1" 2>&1 && exit 0 ;;
     application/x-executable|application/x-pie-executable|application/x-sharedlib)

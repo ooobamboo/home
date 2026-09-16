@@ -1,0 +1,33 @@
+#!/bin/sh -e
+
+PWDIR="${XDG_DATA_HOME}/password"
+KEYID="aloires@tutamail.com"
+
+umask 077; mkdir -p "$PWDIR"
+
+case "$1" in
+	get|set|otp|rm)
+		[ -z "$2" ] && { echo "error: missing name argument" >&2; exit 1; }
+		case "$2" in *..*) echo "error: invalid path name" >&2; exit 1 ;; esac
+		;;
+esac
+
+case "$1" in
+	ls)  find "$PWDIR" -type f -name "*.gpg" | sed "s|^$PWDIR/||;s/\.gpg$//" ;;
+	rm)  rm -f "$PWDIR/$2.gpg" && rmdir -p "$PWDIR/${2%/*}" 2>/dev/null || : ;;
+	get) gpg -qd "$PWDIR/$2.gpg" ;;
+	otp)
+		gpg -qd "$PWDIR/$2.gpg" | sed -n 's/.*secret=\([^&]*\).*/\1/p; t; p' | head -n1 | oathtool --totp -b -
+		;;
+	set)
+		[ -t 0 ] && trap 'stty echo icanon' INT EXIT
+		printf 'Secret (Enter to gen): '; stty -echo; read -r pass; stty echo; printf '\n'
+		[ -n "$pass" ] || pass=$(LC_ALL=C tr -dc 'a-zA-Z0-9_!@#$%^&*()' < /dev/urandom | dd bs=1 count="${PW_LEN:-12}" 2>/dev/null)
+		mkdir -p "$PWDIR/${2%/*}"
+
+		printf '%s\n' "$pass" | gpg --trust-model always -aer "$KEYID" -o "$PWDIR/$2.gpg"
+
+		unset pass
+		;;
+	*) echo "usage: ${0##*/} <set|get|otp|rm|ls> [name]" >&2; exit 1 ;;
+esac

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-API_KEY="$(pass show deepl)"
+API_KEY="$(pw get deepl)"
 
 curl -s -X POST "https://api-free.deepl.com/v2/translate" \
      -H "Authorization: DeepL-Auth-Key $API_KEY" \

@@ -47,6 +47,8 @@ set undofile
 set relativenumber
 set ruler 
 
+set timeoutlen=0
+
 set incsearch
 set hlsearch
 set ignorecase
@@ -61,6 +63,9 @@ set smartindent
 set cc=80
 
 set backspace=indent,eol,start
+
+highlight RedundantSpaces ctermbg=red guibg=red
+match RedundantSpaces /\s\+$/
 
 cmap w!! w !sudo tee > /dev/null %
 

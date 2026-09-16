@@ -1,4 +1,4 @@
 [Desktop Entry]
 Type=Application
 Name=Text editor
-Exec=footclient vim %u
+Exec=footclient waitwinch vim %u

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 save_and_notify() {
-    screenshot_dir="$XDG_PICTURES_DIR/shot"
+    screenshot_dir="${XDG_PICTURES_DIR}/shot"
     mkdir -p "$screenshot_dir"
     screenshot_file="$screenshot_dir/shot-$(date +%Y-%m-%d_%H_%M_%S).png"
 

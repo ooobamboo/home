@@ -11,7 +11,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-export EDITOR="/usr/bin/vim"
+export EDITOR="/usr/local/bin/vim"
 export PAGER="/usr/bin/less"
 export BROWSER="/home/seriola/.local/share/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
 
@@ -78,5 +78,5 @@ $PATH"
 export PATH
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    eval $(ssh-agent) && exec dbus-run-session sh -c 'slstatus -s | /home/seriola/.local/src/mywm/dwl/dwl -s /home/seriola/.local/src/mywm/dwl/autostart.sh'
+    exec dbus-run-session ssh-agent sh -c 'slstatus -s | dwl -s autostart'
 fi

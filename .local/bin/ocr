@@ -37,7 +37,7 @@ def main():
 
     results = ocr.predict(img)
     text = "\n".join(t for p in results for t in p.get("rec_texts", [])).strip()
-    
+
     if text:
         sys.stdout.write(text + "\n")
 

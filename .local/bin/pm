@@ -1,0 +1,14 @@
+#!/bin/sh -e
+
+entry=$(pw ls | mew -i)
+[ "$entry" ] || exit
+
+case "$entry" in
+	*otp*) pass=$(pw otp "$entry") ;;
+	*) pass=$(pw get "$entry" | head -n1) ;;
+esac
+
+case "$1" in --type) printf '%s' "$pass" | wtype -; exit ;; esac
+
+printf '%s' "$pass" | wl-copy --sensitive
+(sleep 15 && wl-copy --clear) >/dev/null 2>&1 &
