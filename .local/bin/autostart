@@ -7,7 +7,7 @@ kanshi &
 fcitx5 -d &
 wl-paste --watch cliphist store &
 foot -s &
-wawa fill "$XDG_PICTURES_DIR/wal/gruvbox-wallpapers/wallpapers/photography/bush.png" &
+wawa fill "${XDG_PICTURES_DIR}/wal/gruvbox-wallpapers/wallpapers/photography/bush.png" &
 swayidle -w \
           timeout 300 'wlock' \
           timeout 600 'wlr-randr --output DP-2 --off' resume 'wlr-randr --output DP-2 --on' \

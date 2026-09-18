@@ -42,3 +42,15 @@ cmd pack ${{
     set -f
     [ -n "$1" ] && bsdtar -acf "$1" -s "|^$PWD/||" $fx
 }}
+
+cmd shred %{{
+    for file in $fx; do
+        shred -u -v -z -n 3 "$file"
+    done
+}}
+
+map Sc $spgp -c $f
+map Se $spgp -e $f
+map Sd $spgp -d $f
+map Ss $spgp -s $f
+map Sv $spgp -v $f

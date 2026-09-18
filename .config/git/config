@@ -1,0 +1,10 @@
+[user]
+	email = aloires@tutamail.com
+	name = aloires
+	signingkey = 447A6F7E8C1D367168DDCDFA0D2CA49DA2EC0076
+[credential]
+	helper = store --file ~/.config/git/credentials
+[pull]
+    rebase = true
+[commit]
+	gpgsign = true

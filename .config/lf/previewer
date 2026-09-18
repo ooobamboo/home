@@ -9,13 +9,10 @@ img() {
 EXT="${1##*.}"
 
 case "${EXT,,}" in
-    bz2|deb|gz|jar|rpm|tar|tbz2|tgz|txz|xz|zip|zst)
+    bz2|deb|gz|jar|rar|rpm|tar|tbz2|tgz|txz|xz|zip|zst)
         bsdtar --list --file "$1" && exit 0 ;;
-    rar) unrar-free lt -p- -- "$1" && exit 0 ;;
     pdf) gs -sDEVICE=png48 -DLastPage=1 -sOutputFile=- -dNOPAUSE -dBATCH \
         -q "$1" | img - "$2" "$3" && exit 0 ;;
-    xlsx) xlsx2csv -- "$1" && exit 0 ;;
-    htm|html|xhtml) w3m -dump "$1" && exit 0 ;;
     json) jaq -C . "$1" && exit 0 ;;
     dff|dsf|wv|wvc) ffprobe -hide_banner -- "$1" && exit 0 ;;
 esac

@@ -13,7 +13,7 @@ export XDG_STATE_HOME="$HOME/.local/state"
 
 export EDITOR="/usr/local/bin/vim"
 export PAGER="/usr/bin/less"
-export BROWSER="/home/seriola/.local/share/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
+export BROWSER="$XDG_DATA_HOME/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
 
 # theme
 export GTK_THEME="Adwaita:dark"
@@ -24,7 +24,6 @@ export XMODIFIERS=@im="fcitx"
 export SDL_IM_MODULE="fcitx"
 
 # config
-export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export GIT_CONFIG_GLOBAL="$XDG_CONFIG_HOME/git/config"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
@@ -56,7 +55,7 @@ export NODE_REPL_HISTORY="$XDG_DATA_HOME/node_repl_history"
 # mirrors
 export RUSTUP_DIST_SERVER="https://rsproxy.cn"
 export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
-export GOPROXY="https://mirrors.aliyun.com/goproxy" 
+export GOPROXY="https://mirrors.aliyun.com/goproxy"
 export PIP_INDEX_URL="https://mirrors.sustech.edu.cn/pypi/web/simple"
 
 # wayland

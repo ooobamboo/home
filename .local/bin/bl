@@ -8,7 +8,7 @@ case $val in [0-9]*) ;; *) printf 'usage: bl [-e] n[%][-/+]\n' >&2; exit 1 ;; es
 
 case $mode in
 in)
-    dev=/sys/class/backlight/nvidia_0
+    dev="/sys/class/backlight/nvidia_0"
     [ -e "$dev" ] || { printf 'no backlight class\n' >&2; exit 1; }
 
     read -r cur < "$dev/brightness"
@@ -27,7 +27,7 @@ in)
     res=$cur
     ;;
 ex)
-    cache=$XDG_STATE_HOME/brightness-ddc
+    cache="${XDG_STATE_HOME}/brightness-ddc"
     read -r cur < "$cache" 2>/dev/null || cur=0
 
     case $val in

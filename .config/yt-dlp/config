@@ -1,3 +1,0 @@
---js-runtimes node
---extractor-args "youtubepot-bgutilscript:server_home=$HOME/.local/src/bgutil-ytdlp-pot-provider/server"
---cookies-from-browser chrome:~/.var/app/io.github.ungoogled_software.ungoogled_chromium/

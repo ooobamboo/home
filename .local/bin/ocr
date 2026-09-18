@@ -1,42 +1,54 @@
 #!/home/seriola/.local/src/ocr/.venv/bin/python
 
-import logging, os, sys, warnings
-import cv2, numpy as np
+import sys
 
-os.environ.setdefault("PADDLE_PDX_CACHE_HOME",
-    os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "paddlex"))
-os.environ.update(PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK="True",
-                  PADDLE_PDX_EAGER_INIT="False", PADDLE_PDX_USE_PIR_TRT="0")
-warnings.filterwarnings("ignore")
-logging.disable(logging.CRITICAL)
+_engine = None
 
-from paddleocr import PaddleOCR
+def _get_engine():
+    global _engine
+    if _engine is None:
+        from faster_paddle import OcrEngine
+        _engine = OcrEngine(model_size="medium")
+    return _engine
 
-ocr = PaddleOCR(lang="ch",
-    text_detection_model_name="PP-OCRv6_tiny_det",
-    text_recognition_model_name="PP-OCRv6_tiny_rec",
-    use_doc_orientation_classify=False, use_doc_unwarping=False,
-    use_textline_orientation=False, device="gpu",
-    text_recognition_batch_size=32, text_det_box_thresh=0.4,
-    text_det_unclip_ratio=2.0)
+def _merge_lines(bounds):
+    items = sorted(bounds.values(),
+                   key=lambda b: (b["topLeftCoord"][1], b["topLeftCoord"][0]))
+    if not items:
+        return ""
+
+    lines = []
+    current_line = [items[0]]
+    for b in items[1:]:
+        prev = current_line[-1]
+        prev_cy = (prev["topLeftCoord"][1] + prev["bottomRightCoord"][1]) / 2
+        cur_cy = (b["topLeftCoord"][1] + b["bottomRightCoord"][1]) / 2
+        prev_h = prev["bottomRightCoord"][1] - prev["topLeftCoord"][1]
+        if abs(cur_cy - prev_cy) < prev_h * 0.5:
+            current_line.append(b)
+        else:
+            lines.append(current_line)
+            current_line = [b]
+    lines.append(current_line)
+
+    return "\n".join(
+        " ".join(b["text"] for b in sorted(line, key=lambda b: b["topLeftCoord"][0]))
+        for line in lines
+    )
 
 def main():
     raw_data = sys.stdin.buffer.read()
     if not raw_data:
         return
 
-    img_np = np.frombuffer(raw_data, np.uint8)
-    img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
-    if img is None:
-        return
+    engine = _get_engine()
+    result = engine.ocr(raw_data)
+    bounds = result.get("bounds", {})
 
-    h, w = img.shape[:2]
-    if min(h, w) < 200:
-        s = min(200 / min(h, w), 1.5)
-        img = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_CUBIC)
-
-    results = ocr.predict(img)
-    text = "\n".join(t for p in results for t in p.get("rec_texts", [])).strip()
+    if not bounds:
+        text = result.get("text", "").strip()
+    else:
+        text = _merge_lines(bounds).strip()
 
     if text:
         sys.stdout.write(text + "\n")

@@ -9,7 +9,7 @@ save_and_notify() {
 }
 
 shotWindow() {
-    window=$(slurp) && grim -g "$window" - | save_and_notify "Focused Window"
+    grim -g - - | save_and_notify "Focused Window"
 }
 
 shotAll() {
