@@ -1,0 +1,47 @@
+#!/bin/sh
+
+file="$2"
+
+abort() {
+    echo "$@" >&2
+    exit 1
+}
+
+cipher() {
+    gpg -c --cipher-algo "aes256" --no-symkey-cache "$file"
+}
+
+encrypt() {
+    pubkey="$(gpg --list-keys \
+           | sed -n 's/.*<\(.*\)>.*/\1/p' \
+           | mew -p "${0##*/} encrypt with pubkey: ")"
+    [ -z "$pubkey" ] && abort "Aborted: no pubkey selected"
+
+    gpg -e --no-symkey-cache --recipient "$pubkey" "$file"
+}
+
+decrypt() {
+    out="${file%.gpg}"
+    gpg --no-symkey-cache --batch -o "$out" -d "$file"
+}
+
+sign() {
+    seckey="$(gpg --list-secret-keys \
+           | sed -n 's/.*<\(.*\)>.*/\1/p' \
+           | mew -p "${0##*/} sign with seckey: ")"
+    [ -z "$seckey" ] && abort "Aborted: no seckey selected"
+
+    gpg --no-symkey-cache --detach-sign --armor --local-user "$seckey" "$file"
+}
+
+verify() {
+    gpg --verify "$file"
+}
+
+case "$1" in
+    -c) cipher ;;
+    -e) encrypt ;;
+    -d) decrypt ;;
+    -s) sign ;;
+    -v) verify ;;
+esac
