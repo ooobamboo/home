@@ -1,0 +1,6 @@
+#!/bin/sh
+
+INPUT=$(mew -p "Translate:") || exit 0
+set -- $INPUT; TARGET=$(echo "$1" | tr '[:lower:]' '[:upper:]'); shift
+[ -z "$*" ] && exit 1
+wlrctl keyboard type "$(echo "$*" | deepl "$TARGET")"
