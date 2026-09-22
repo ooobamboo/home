@@ -17,6 +17,7 @@ export BROWSER="$XDG_DATA_HOME/flatpak/exports/bin/io.github.ungoogled_software.
 
 # theme
 export GTK_THEME="Adwaita:dark"
+export QT_QPA_PLATFORMTHEME="xdgdesktopportal"
 
 # ime
 export QT_IM_MODULES="wayland;fcitx;ibus"
@@ -53,10 +54,10 @@ export MANPATH="$XDG_DATA_HOME/man:/usr/share/man:"
 export NODE_REPL_HISTORY="$XDG_DATA_HOME/node_repl_history"
 
 # mirrors
-export RUSTUP_DIST_SERVER="https://rsproxy.cn"
-export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
+export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
 export GOPROXY="https://mirrors.aliyun.com/goproxy"
-export PIP_INDEX_URL="https://mirrors.sustech.edu.cn/pypi/web/simple"
+export PIP_INDEX_URL="https://mirrors.ustc.edu.cn/pypi/simple"
 
 # wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
@@ -69,13 +70,19 @@ export ANDROID_SDK_ROOT="$XDG_DATA_HOME/android"
 PATH="$HOME/.local/bin:\
 $XDG_DATA_HOME/flatpak/exports/bin:\
 $CARGO_HOME/bin:\
+/usr/local/go/bin:\
 $GOPATH/bin:\
 $XDG_DATA_HOME/zvm/bin:\
 $XDG_DATA_HOME/npm/bin:\
 $ANDROID_HOME/platform-tools:\
+$XDG_DATA_HOME/vim-lsp-settings/servers/clangd/bin:\
+$(find "$XDG_DATA_HOME/vim-lsp-settings/servers" -mindepth 1 -maxdepth 1 -type d | paste -sd ':'):\
 $PATH"
 export PATH
 
+export PATH="$PATH:$(find ${XDG_DATA_HOME:-$HOME/.local/share}/vim-lsp-settings/servers -mindepth 1 -maxdepth 1 -type d 2>/dev/null | paste -sd ':')"
+
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     exec dbus-run-session ssh-agent sh -c 'slstatus -s | dwl -s autostart'
+    #exec dbus-run-session ssh-agent sh -c 'sway'
 fi

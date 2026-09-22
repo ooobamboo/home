@@ -27,7 +27,7 @@ fkill() {
 
 fh() {
     local cmd
-    cmd=$( (fc -l 1 || history) | sed -E 's/ *[0-9]*\*? *//' | tac | fzy)
+    cmd=$( (fc -l 1 || history) | sed -E 's/^[[:space:]]*[0-9]+\*?[[:space:]]+//' | tac | fzy)
     [ -n "$cmd" ] && eval "$cmd"
 }
 

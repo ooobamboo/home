@@ -35,12 +35,12 @@ map gL follow-link
 
 cmd extract ${{
     set -f
-    bsdtar -xvf "$fx"
+    ouch decompress -y "$fx"
 }}
 
 cmd pack ${{
     set -f
-    [ -n "$1" ] && bsdtar -acf "$1" -s "|^$PWD/||" $fx
+    [ -n "$1" ] && ouch compress -y $(echo "$fx" | sed "s|$PWD/||g") "$1"
 }}
 
 cmd shred %{{

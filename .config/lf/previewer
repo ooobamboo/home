@@ -3,14 +3,14 @@
 set -euo pipefail
 
 img() {
-    chafa -f sixel -s "$2x$3" --animate off --polite on "$1"
+    gosr -transparent -width "$2" -height "$3" "$1"
 }
 
 EXT="${1##*.}"
 
 case "${EXT,,}" in
     bz2|deb|gz|jar|rar|rpm|tar|tbz2|tgz|txz|xz|zip|zst)
-        bsdtar --list --file "$1" && exit 0 ;;
+        ouch list -t "$1" && exit 0 ;;
     pdf) gs -sDEVICE=png48 -DLastPage=1 -sOutputFile=- -dNOPAUSE -dBATCH \
         -q "$1" | img - "$2" "$3" && exit 0 ;;
     json) jaq -C . "$1" && exit 0 ;;

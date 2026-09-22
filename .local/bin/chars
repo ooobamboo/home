@@ -21,4 +21,4 @@ mkdir -p "$CACHE_DIR"
 
 SELECTED=$(cat "$EMOJI_CACHE" "$NERD_CACHE" | mew -i -l 20 -p "${0##*/}" | cut -d' ' -f1 | tr -d '\n')
 
-[ -n "$SELECTED" ] && wtype "$SELECTED"
+[ -n "$SELECTED" ] && wlrctl keyboard type "$SELECTED"

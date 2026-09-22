@@ -80,3 +80,8 @@ function! FzyCommand(choice_command, vim_command)
 endfunction
 
 nnoremap <leader>vsp :call FzyCommand("find . -type f", ":vsp")<cr>
+
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_winsize = 25
+nnoremap <C-t> :Lexplore<CR>

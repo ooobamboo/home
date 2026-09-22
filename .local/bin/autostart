@@ -4,7 +4,7 @@ dbus-update-activation-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=d
 wlr-randr --output DP-2 --mode 2560x1440@179.998993Hz  --pos 0,0 --output eDP-1 --off
 pipewire &
 wlsunset -l 39.9 -L 116.4 &
-fcitx5 -d &
+org.fcitx.Fcitx5 &
 wl-paste --watch cliphist store &
 foot -s &
 wawa fill "${XDG_PICTURES_DIR}/wal/gruvbox-wallpapers/wallpapers/photography/bush.png" &
