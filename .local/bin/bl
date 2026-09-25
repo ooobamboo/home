@@ -40,7 +40,7 @@ ex)
     [ "$tgt" -gt 100 ] && tgt=100
 
     chk=$(( 0x6E ^ 0x51 ^ 0x84 ^ 0x03 ^ 0x10 ^ 0 ^ tgt ))
-    i2ctransfer -y 2 w7@0x37 0x51 0x84 0x03 0x10 0 "$tgt" "$chk" || { printf 'DDC write failed\n' >&2; exit 1; }
+    i2ctransfer -y 1 w7@0x37 0x51 0x84 0x03 0x10 0 "$tgt" "$chk" || { printf 'DDC write failed\n' >&2; exit 1; }
 
     printf "$tgt\n" > "$cache"
     res=$tgt
