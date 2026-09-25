@@ -71,6 +71,7 @@ PATH="$HOME/.local/bin:\
 $XDG_DATA_HOME/flatpak/exports/bin:\
 $CARGO_HOME/bin:\
 /usr/local/go/bin:\
+/usr/local/lib/nodejs/node-v24.21.0-linux-x64/bin:\
 $GOPATH/bin:\
 $XDG_DATA_HOME/zvm/bin:\
 $XDG_DATA_HOME/npm/bin:\
