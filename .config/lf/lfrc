@@ -33,6 +33,26 @@ cmd follow-link %{{
 }}
 map gL follow-link
 
+cmd link %{{
+    set -- $(cat ~/.local/share/lf/files)
+    mode="$1"
+    shift
+    if [ "$#" -lt 1 ]; then
+        lf -remote "send $id echoerr no files to link"
+        exit
+    fi
+    case "$mode" in
+        # 'copy' mode indicates a symlink
+        copy) ln -sr -t . -- "$@";;
+        # while 'move' mode indicates a hard link
+        move)
+            ln -t . -- "$@"
+            lf -remote "send clear"
+            ;;
+    esac
+}}
+map P :link
+
 cmd extract ${{
     set -f
     ouch decompress -y "$fx"
