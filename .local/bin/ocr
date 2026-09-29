@@ -1,4 +1,4 @@
-#!/home/seriola/.local/src/ocr/.venv/bin/python
+#!/home/seriola/.local/src/wm/ocr/.venv/bin/python
 
 import sys
 
