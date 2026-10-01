@@ -69,21 +69,18 @@ export ANDROID_SDK_ROOT="$XDG_DATA_HOME/android"
 
 PATH="$HOME/.local/bin:\
 $XDG_DATA_HOME/flatpak/exports/bin:\
+$ANDROID_HOME/platform-tools:\
 $CARGO_HOME/bin:\
 /usr/local/go/bin:\
-/usr/local/lib/nodejs/node-v24.21.0-linux-x64/bin:\
 $GOPATH/bin:\
-$XDG_DATA_HOME/zvm/bin:\
+/usr/local/lib/nodejs/node-v24.21.0-linux-x64/bin:\
 $XDG_DATA_HOME/npm/bin:\
-$ANDROID_HOME/platform-tools:\
+$XDG_DATA_HOME/zvm/bin:\
+$(find "$XDG_DATA_HOME/vim-lsp-settings/servers" -mindepth 1 -maxdepth 1 -type d | paste -sd ':')\
 $XDG_DATA_HOME/vim-lsp-settings/servers/clangd/bin:\
-$(find "$XDG_DATA_HOME/vim-lsp-settings/servers" -mindepth 1 -maxdepth 1 -type d | paste -sd ':'):\
 $PATH"
 export PATH
 
-export PATH="$PATH:$(find ${XDG_DATA_HOME:-$HOME/.local/share}/vim-lsp-settings/servers -mindepth 1 -maxdepth 1 -type d 2>/dev/null | paste -sd ':')"
-
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     exec dbus-run-session ssh-agent sh -c 'slstatus -s | dwl -s autostart'
-    #exec dbus-run-session ssh-agent sh -c 'sway'
 fi
