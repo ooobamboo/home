@@ -76,7 +76,7 @@ $GOPATH/bin:\
 /usr/local/lib/nodejs/node-v24.21.0-linux-x64/bin:\
 $XDG_DATA_HOME/npm/bin:\
 $XDG_DATA_HOME/zvm/bin:\
-$(find "$XDG_DATA_HOME/vim-lsp-settings/servers" -mindepth 1 -maxdepth 1 -type d | paste -sd ':')\
+$(find "$XDG_DATA_HOME/vim-lsp-settings/servers"/* -prune -type d | paste -sd ':')\
 $XDG_DATA_HOME/vim-lsp-settings/servers/clangd/bin:\
 $PATH"
 export PATH
