@@ -14,16 +14,15 @@ esac
 
 case "$1" in
 	ls)  find "$PWDIR" -type f -name "*.gpg" | sed "s|^$PWDIR/||;s/\.gpg$//" ;;
-	rm)  rm -f "$PWDIR/$2.gpg" && rmdir -p "$PWDIR/${2%/*}" 2>/dev/null || : ;;
+	rm)  rm -f "$PWDIR/$2.gpg"
+	     [ "${2#*/}" != "$2" ] && rmdir -p "$PWDIR/${2%/*}" 2>/dev/null || : ;;
 	get) gpg -qd "$PWDIR/$2.gpg" ;;
-	otp)
-		gpg -qd "$PWDIR/$2.gpg" | sed -n 's/.*secret=\([^&]*\).*/\1/p; t; p' | head -n1 | oathtool --totp -b -
-		;;
+	otp) gpg -qd "$PWDIR/$2.gpg" | sed -n 's/.*secret=\([^&]*\).*/\1/p; t; p' | head -n1 | oathtool --totp -b - ;;
 	set)
 		[ -t 0 ] && trap 'stty echo icanon' INT EXIT
 		printf 'Secret (Enter to gen): '; stty -echo; read -r pass; stty echo; printf '\n'
 		[ -n "$pass" ] || pass=$(LC_ALL=C tr -dc 'a-zA-Z0-9_!@#$%^&*()' < /dev/urandom | dd bs=1 count="${PW_LEN:-12}" 2>/dev/null)
-		mkdir -p "$PWDIR/${2%/*}"
+		[ "${2#*/}" != "$2" ] && mkdir -p "$PWDIR/${2%/*}"
 
 		printf '%s\n' "$pass" | gpg --trust-model always -aer "$KEYID" -o "$PWDIR/$2.gpg"
 
