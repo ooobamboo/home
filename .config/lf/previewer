@@ -11,8 +11,6 @@ EXT="${1##*.}"
 case "${EXT,,}" in
     bz2|deb|gz|jar|rar|rpm|tar|tbz2|tgz|txz|xz|zip|zst)
         ouch list -t "$1" && exit 0 ;;
-    pdf) gs -sDEVICE=png48 -DLastPage=1 -sOutputFile=- -dNOPAUSE -dBATCH \
-        -q "$1" | img - "$2" "$3" && exit 0 ;;
     json) jaq -C . "$1" && exit 0 ;;
     dff|dsf|wv|wvc) ffprobe -hide_banner -- "$1" && exit 0 ;;
 esac

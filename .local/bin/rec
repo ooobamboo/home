@@ -1,8 +1,19 @@
 #!/bin/sh
 
-RECORD_HOME="${XDG_VIDEOS_DIR}/rec"
-[ -d "${RECORD_HOME}" ] || mkdir -p ${RECORD_HOME}
+pidof -q wf-recorder && {
+	pkill -INT wf-recorder
+	exit
+}
 
-pkill -SIGINT -f 'gpu-screen-recorder' && fyi -t 1500 -u low 'GPU Screen Recorder' 'Stopped' && exit 0
+record_file="${XDG_VIDEOS_DIR}/rec/rec-$(date +%Y-%m-%d_%H_%M_%S).mp4"
 
-gpu-screen-recorder -w portal -o "${RECORD_HOME}/rec-$(date +%Y-%m-%d_%H_%M_%S).mp4"
+wf-recorder \
+	-f "$record_file" \
+	-g "$(head -n1)" \
+	-r 60 || {
+		fyi "Screen recording failed"
+		exit 1
+	}
+
+printf 'file://%s' "$record_file" | wl-copy -t text/uri-list
+fyi "Screen recording captured"

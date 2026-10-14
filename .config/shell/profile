@@ -11,18 +11,9 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-export EDITOR="/usr/local/bin/vim"
+export EDITOR="/usr/bin/vim"
 export PAGER="/usr/bin/less"
-export BROWSER="$XDG_DATA_HOME/flatpak/exports/bin/io.github.ungoogled_software.ungoogled_chromium"
-
-# theme
-export GTK_THEME="Adwaita:dark"
-export QT_QPA_PLATFORMTHEME="xdgdesktopportal"
-
-# ime
-export QT_IM_MODULES="wayland;fcitx;ibus"
-export XMODIFIERS=@im="fcitx"
-export SDL_IM_MODULE="fcitx"
+export BROWSER="/usr/bin/chromium"
 
 # config
 export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
@@ -54,8 +45,8 @@ export MANPATH="$XDG_DATA_HOME/man:/usr/share/man:"
 export NODE_REPL_HISTORY="$XDG_DATA_HOME/node_repl_history"
 
 # mirrors
-export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
-export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+export RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static"
+export RUSTUP_UPDATE_ROOT="https://mirrors.ustc.edu.cn/rust-static/rustup"
 export GOPROXY="https://mirrors.aliyun.com/goproxy"
 export PIP_INDEX_URL="https://mirrors.ustc.edu.cn/pypi/simple"
 
@@ -80,5 +71,5 @@ $PATH"
 export PATH
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    exec dbus-run-session ssh-agent sh -c 'slstatus -s | dwl -s autostart'
+    exec dbus-run-session sh -c 'slstatus -s | dwl -s autostart'
 fi

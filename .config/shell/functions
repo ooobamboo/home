@@ -37,11 +37,12 @@ xmd() {
 }
 
 fetch() {
-	printf '%s@%s\n%-10sVoid Linux\n%-10s%s\n%-10s%s\n%-10s%s\n%-10s%s\n' \
+	printf '%s@%s\n%-10sVoid Linux\n%-10s%s\n%-10s%s\n%-10s%s\n%-10s%s\n%-10s%s\n' \
 		"$USER" "$(hostname)" \
 		"OS:" \
 		"KERNEL:" "$(uname -sr)" \
 		"UPTIME:" "$(uptime -p | sed 's/up //')" \
+		"MEMORY:" "$(free -h | awk '/^Mem:/ {print $3 " / " $2}')" \
 		"PACKAGES:" "$(xbps-query -l | wc -l)" \
 		"SHELL:" "${SHELL##*/}"
 }
